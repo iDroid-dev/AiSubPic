@@ -1,0 +1,81 @@
+@layout.app({ title: "Тарифы" })
+@slot('main')
+  <div class="flex justify-between mb-6">
+    <h1 class="text-3xl font-bold">Тарифы</h1>
+    <a href="{{ route('admin.plans.create') }}" class="btn btn-primary">Создать тариф</a>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="table bg-base-100 shadow">
+      <thead>
+          <tr>
+              <th>Название</th>
+              <th>Бот</th>
+              <th>Цена</th>
+              <th>Условия</th>
+              <th>Статус</th> {{-- Новая колонка --}}
+              <th>Действия</th>
+          </tr>
+      </thead>
+      <tbody>
+          @each(plan in plans)
+          <tr class="hover">
+              {{-- Название --}}
+              <td class="font-bold">
+                  {{ plan.name }}
+                  <div class="text-xs font-normal opacity-50">{{ plan.description || '' }}</div>
+              </td>
+
+              {{-- Бот --}}
+              <td>
+                  @if(plan.bot)
+                      <div class="badge badge-neutral badge-sm">{{ plan.bot.name }}</div>
+                  @else
+                      <div class="badge badge-ghost badge-sm">Общий</div>
+                  @endif
+              </td>
+
+              {{-- Цена --}}
+              <td>
+                <div class="font-mono">{{ plan.price }} {{ plan.currency }}</div>
+              </td>
+
+              {{-- Условия (Генерации + Дни) --}}
+              <td>
+                  <div class="flex flex-col text-xs">
+                      <span>🎨 {{ plan.credits }} шт.</span>
+                      <span class="opacity-70">⏳ {{ plan.durationDays }} дн.</span>
+                  </div>
+              </td>
+
+              {{-- Статус (То, что ты просил) --}}
+              <td>
+                  @if(plan.isActive)
+                      <div class="badge badge-success gap-2 badge-sm">
+                        Активен
+                      </div>
+                  @else
+                      <div class="badge badge-ghost gap-2 badge-sm">
+                        Скрыт
+                      </div>
+                  @endif
+              </td>
+
+              {{-- Действия (Объединили кнопки) --}}
+              <td>
+                  <div class="join">
+                    <a href="{{ route('admin.plans.edit', {id: plan.id}) }}" class="btn btn-xs btn-primary join-item">Edit</a>
+                    <a href="{{ route('admin.plans.delete', {id: plan.id}) }}" class="btn btn-xs btn-error join-item" onclick="return confirm('Удалить этот тариф?')">Del</a>
+                  </div>
+              </td>
+          </tr>
+          @else
+            <tr>
+                <td colspan="6" class="text-center py-4 opacity-50">Тарифов пока нет</td>
+            </tr>
+          @endeach
+      </tbody>
+    </table>
+  </div>
+@endslot
+@end

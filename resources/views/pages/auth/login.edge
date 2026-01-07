@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title || 'Admin Panel' }}</title>
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="min-h-screen bg-base-200 font-sans text-base-content">
+
+
+
+    <div class="flex justify-center items-center h-[80vh]">
+      <div class="card w-full max-w-sm shadow-2xl bg-base-100">
+        <form action="{{ route('login.action') }}" method="POST" class="card-body">
+          {{ csrfField() }}
+          
+          <h2 class="card-title justify-center mb-4">Admin Access</h2>
+
+          {{-- Ошибки --}}
+          @if(flashMessages.has('error'))
+            <div class="alert alert-error text-sm py-2 mb-4">
+              {{ flashMessages.get('error') }}
+            </div>
+          @endif
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Email</span>
+            </label>
+            <input type="email" name="email" placeholder="admin@example.com" class="input input-bordered" required />
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Пароль</span>
+            </label>
+            <input type="password" name="password" placeholder="******" class="input input-bordered" required />
+          </div>
+
+          <div class="form-control mt-6">
+            <button type="submit" class="btn btn-primary">Войти</button>
+          </div>
+        </form>
+      </div>
+    </div>
+</body>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  {{-- SEO Meta Tags --}}
+  <title>AI Генератор Изображений в Telegram | Flux Schnell Bot</title>
+  <meta name="description" content="Генерируйте профессиональные изображения за секунды с помощью нейросети Flux Schnell прямо в Telegram. Высокое качество, низкие цены, мгновенный результат.">
+  <meta name="keywords" content="AI, нейросеть, генерация картинок, Telegram бот, Flux Schnell, Midjourney альтернатива, создание изображений, искусственный интеллект">
+  <meta name="robots" content="index, follow">
+  
+  {{-- Open Graph / Social Media --}}
+  <meta property="og:title" content="AI Генератор Изображений в Telegram">
+  <meta property="og:description" content="Создавай шедевры в один клик. Попробуй мощь Flux Schnell в удобном боте.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://твой-домен.ru">
+  <meta property="og:image" content="https://твой-домен.ru/og-image.jpg"> {{-- Замени на ссылку на красивую картинку --}}
+  
+  {{-- Styles --}}
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+  
+  {{-- Доп. стили для градиентов и анимаций --}}
+  <style>
+    .text-gradient {
+      background: linear-gradient(to right, #a78bfa, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-glow {
+      box-shadow: 0 0 100px -20px rgba(66, 153, 225, 0.5);
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased bg-base-300 text-base-content selection:bg-primary selection:text-white">
+
+  {{-- Navbar --}}
+  <div class="navbar bg-base-100/80 backdrop-blur-md sticky top-0 z-50 border-b border-base-content/10">
+    <div class="container mx-auto">
+      <div class="flex-1">
+        <a href="/" class="btn btn-ghost text-2xl font-bold tracking-tighter">
+          <span class="text-primary">AI</span>GenBot
+        </a>
+      </div>
+      <div class="flex-none">
+        <a href="https://t.me/ТВОЙ_БОТ" target="_blank" class="btn btn-primary btn-sm md:btn-md rounded-full px-6 shadow-lg shadow-primary/20">
+          Открыть Бота
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 ml-1">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {{-- Hero Section --}}
+  <section class="relative pt-20 pb-32 overflow-hidden">
+    <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+    <div class="container mx-auto px-4 text-center relative z-10">
+      <div class="inline-block mb-4 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-medium animate-pulse">
+        🚀 Доступна модель Flux Schnell
+      </div>
+      
+      <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
+        Превращай идеи в <br>
+        <span class="text-gradient">Искусство</span> за секунды
+      </h1>
+      
+      <p class="text-xl md:text-2xl text-base-content/70 mb-10 max-w-2xl mx-auto">
+        Мощный Telegram бот для генерации изображений. Просто напиши, что ты хочешь увидеть, и нейросеть нарисует это для тебя.
+      </p>
+      
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <a href="https://t.me/ТВОЙ_БОТ" class="btn btn-primary btn-lg rounded-xl text-lg px-10 shadow-xl shadow-primary/30 hover:scale-105 transition-transform duration-200">
+          Попробовать бесплатно
+        </a>
+        <a href="#pricing" class="btn btn-ghost btn-lg rounded-xl">
+          Смотреть тарифы
+        </a>
+      </div>
+      
+      {{-- Mockup / Visual --}}
+      <div class="mt-16 mx-auto max-w-4xl mockup-browser border border-base-content/10 bg-base-200 shadow-2xl hero-glow">
+        <div class="mockup-browser-toolbar">
+          <div class="input">https://t.me/ai_gen_bot</div>
+        </div>
+        <div class="flex justify-center bg-base-100 p-4 md:p-8">
+          <div class="chat chat-start w-full">
+            <div class="chat-image avatar">
+              <div class="w-10 rounded-full">
+                <img src="https://ui-avatars.com/api/?name=User&background=random" />
+              </div>
+            </div>
+            <div class="chat-bubble">Нарисуй футуристичный город в стиле киберпанк, неон, дождь</div>
+          </div>
+          <div class="chat chat-end w-full mt-4">
+            <div class="chat-image avatar">
+              <div class="w-10 rounded-full border border-primary p-0.5">
+                <img src="https://ui-avatars.com/api/?name=Bot&background=0D8ABC&color=fff" />
+              </div>
+            </div>
+            <div class="chat-bubble chat-bubble-primary w-full max-w-md p-0 overflow-hidden shadow-lg">
+              <div class="w-full h-64 bg-gradient-to-br from-indigo-900 to-purple-900 flex items-center justify-center text-white/50">
+                [Сгенерированное изображение]
+              </div>
+            </div>
+            <div class="chat-footer opacity-50 text-xs mt-1">Готово за 1.2 сек</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {{-- Features Section --}}
+  <section class="py-24 bg-base-200">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold mb-4">Почему выбирают нас?</h2>
+        <p class="text-base-content/60 max-w-xl mx-auto">Мы используем передовые технологии для достижения лучшего результата.</p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {{-- Feature 1 --}}
+        <div class="card bg-base-100 shadow-xl border border-base-content/5 hover:border-primary/50 transition-colors duration-300">
+          <div class="card-body items-center text-center">
+            <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl mb-4">
+              ⚡️
+            </div>
+            <h3 class="card-title text-xl">Мгновенная скорость</h3>
+            <p class="text-base-content/70">Технология Flux Schnell генерирует изображения в 10 раз быстрее обычных моделей без потери качества.</p>
+          </div>
+        </div>
+        
+        {{-- Feature 2 --}}
+        <div class="card bg-base-100 shadow-xl border border-base-content/5 hover:border-primary/50 transition-colors duration-300">
+          <div class="card-body items-center text-center">
+            <div class="w-16 h-16 rounded-2xl bg-secondary/10 flex items-center justify-center text-3xl mb-4">
+              🎨
+            </div>
+            <h3 class="card-title text-xl">Высокая детализация</h3>
+            <p class="text-base-content/70">Идеальное соблюдение промпта. Нейросеть понимает сложные описания и создает именно то, что вы просили.</p>
+          </div>
+        </div>
+        
+        {{-- Feature 3 --}}
+        <div class="card bg-base-100 shadow-xl border border-base-content/5 hover:border-primary/50 transition-colors duration-300">
+          <div class="card-body items-center text-center">
+            <div class="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center text-3xl mb-4">
+              💎
+            </div>
+            <h3 class="card-title text-xl">Выгодная цена</h3>
+            <p class="text-base-content/70">Наши тарифы одни из самых доступных на рынке. Платите только за качественные генерации.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {{-- Pricing Section --}}
+  <section id="pricing" class="py-24 relative">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold mb-4">Выберите свой план</h2>
+        <p class="text-base-content/60">Начните с малого или возьмите максимум.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        @each(plan in plans)
+          <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 border border-base-content/10 relative overflow-hidden group">
+            
+            {{-- Выделение популярного тарифа (средний по цене или по логике) --}}
+            @if(plan.price >= 300 && plan.price <= 400)
+              <div class="absolute top-0 right-0 bg-primary text-primary-content text-xs font-bold px-3 py-1 rounded-bl-lg z-10">
+                ХИТ
+              </div>
+            @endif
+
+            <div class="card-body items-center text-center">
+              <h3 class="font-bold text-lg uppercase tracking-widest opacity-70 mb-2">{{ plan.name }}</h3>
+              <div class="text-5xl font-extrabold mb-1">
+                {{ Math.round(plan.price) }}₽
+              </div>
+              <div class="text-sm opacity-50 mb-6">/ навсегда</div>
+              
+              <ul class="w-full space-y-3 mb-8 text-left">
+                <li class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                  <span class="font-bold text-base-content">{{ plan.generationsCount }} генераций</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                  <span>Доступ ко всем стилям</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                  <span>Быстрая очередь</span>
+                </li>
+                @if(plan.description)
+                  <li class="text-xs text-base-content/50 italic mt-2 pt-2 border-t border-base-content/10">
+                    {{ plan.description }}
+                  </li>
+                @endif
+              </ul>
+
+              <div class="card-actions w-full">
+                <a href="https://t.me/ТВОЙ_БОТ?start=buy_{{ plan.id }}" class="btn btn-primary w-full shadow-lg group-hover:scale-[1.02] transition-transform">
+                  Выбрать тариф
+                </a>
+              </div>
+            </div>
+          </div>
+        @endeach
+        
+        {{-- Если тарифов нет, покажем заглушку --}}
+        @if(plans.length === 0)
+           <div class="col-span-3 text-center text-gray-500 py-10">
+             Тарифы загружаются...
+           </div>
+        @endif
+      </div>
+    </div>
+  </section>
+
+  {{-- Footer --}}
+  <footer class="footer p-10 bg-neutral text-neutral-content">
+    <div class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+      <aside>
+        <div class="text-3xl font-bold text-primary mb-2">AI GenBot</div>
+        <p>Современные технологии генерации<br>изображений для вашего творчества.</p>
+        <p class="mt-4 text-sm opacity-50">© {{ new Date().getFullYear() }} Все права защищены.</p>
+      </aside> 
+      <nav>
+        <header class="footer-title">Сервис</header> 
+        <a href="#pricing" class="link link-hover">Тарифы</a> 
+        <a href="https://t.me/ТВОЙ_БОТ" class="link link-hover">Запустить бота</a>
+      </nav> 
+      <nav>
+        <header class="footer-title">Правовая информация</header> 
+        <a class="link link-hover">Пользовательское соглашение</a> 
+        <a class="link link-hover">Политика конфиденциальности</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

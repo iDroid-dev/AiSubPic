@@ -1,0 +1,73 @@
+@layout.app({title: "Дашборд | Admin" })
+
+@slot('main')
+    <h1 class="text-3xl font-bold mb-6">Дашборд</h1>
+
+    {{-- Статистика --}}
+    <div class="stats shadow w-full mb-8 bg-base-100">
+      <div class="stat">
+        <div class="stat-figure text-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </div>
+        <div class="stat-title">Пользователей</div>
+        <div class="stat-value text-primary">{{ stats.users }}</div>
+        <div class="stat-desc">Всего регистраций в боте</div>
+      </div>
+      
+      <div class="stat">
+        <div class="stat-figure text-secondary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </div>
+        <div class="stat-title">Заказов</div>
+        <div class="stat-value text-secondary">{{ stats.orders }}</div>
+        <div class="stat-desc">Оплаченных подписок</div>
+      </div>
+      
+      <div class="stat">
+        <div class="stat-title">Доход</div>
+        <div class="stat-value text-accent">{{ stats.income }} ₽</div>
+        <div class="stat-desc">Общая выручка</div>
+      </div>
+    </div>
+
+    {{-- Таблица --}}
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h2 class="card-title mb-4">Последние регистрации</h2>
+        <div class="overflow-x-auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Telegram</th>
+                <th>Имя</th>
+                <th>Кредиты</th>
+                <th>Дата</th>
+              </tr>
+            </thead>
+            <tbody>
+              @each(user in latestUsers)
+                <tr class="hover">
+                  <td>{{ user.id }}</td>
+                  <td>{{ user.telegramId || '-' }}</td>
+                  <td>
+                    <div class="font-bold">{{ user.fullName || 'Без имени' }}</div>
+                    <div class="text-xs opacity-50">{{ user.username ? '@'+user.username : '' }}</div>
+                  </td>
+                  <td>
+                    <span class="badge badge-ghost badge-sm">{{ user.credits }} gen</span>
+                  </td>
+                  <td>{{ user.createdAt.toFormat('dd MMM HH:mm') }}</td>
+                </tr>
+              @endeach
+            </tbody>
+          </table>
+        </div>
+        <div class="card-actions justify-end mt-4">
+           <a href="/admin/users" class="btn btn-outline btn-sm">Все пользователи</a>
+        </div>
+      </div>
+    </div>
+  @endslot
+
+@end

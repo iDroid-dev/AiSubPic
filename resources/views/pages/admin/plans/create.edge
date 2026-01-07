@@ -1,0 +1,109 @@
+@layout.app({ title: "Новый тариф" })
+
+@slot('main')
+<div class="max-w-3xl mx-auto">
+  {{-- Хлебные крошки --}}
+  <div class="text-sm breadcrumbs mb-4">
+    <ul>
+      <li><a href="{{ route('admin.dashboard') }}">Дашборд</a></li> 
+      <li><a href="{{ route('admin.plans.index') }}">Тарифы</a></li> 
+      <li>Создание</li>
+    </ul>
+  </div>
+
+  <div class="card bg-base-100 shadow-xl border border-base-200">
+    <div class="card-body">
+      <h2 class="card-title text-2xl mb-6 border-b pb-4">Создание тарифа</h2>
+
+      <form action="{{ route('admin.plans.store') }}" method="POST">
+        {{ csrfField() }}
+
+        {{-- БЛОК 1: Привязка и Название --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Бот</span></label>
+                <select name="bot_id" class="select select-bordered w-full" required>
+                    <option value="" disabled selected>Выберите бота...</option>
+                    @each(bot in bots)
+                        <option value="{{ bot.id }}">{{ bot.name }} ({{ bot.username }})</option>
+                    @endeach
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Название тарифа</span></label>
+                <input type="text" name="name" placeholder="Например: Start" class="input input-bordered w-full" required />
+            </div>
+        </div>
+
+        {{-- БЛОК 2: Цены и Сроки (Выделим фоном) --}}
+        <div class="bg-base-200 p-5 rounded-xl mb-6">
+            <h3 class="text-sm font-bold text-gray-500 uppercase mb-3">Финансы и Условия</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {{-- Цена --}}
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Цена</span></label>
+                    <input type="number" name="price" placeholder="199" class="input input-bordered w-full" required />
+                </div>
+                
+                {{-- Валюта --}}
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Валюта</span></label>
+                    <select name="currency" class="select select-bordered w-full">
+                        <option value="RUB" selected>RUB</option>
+                        <option value="USD">USD</option>
+                    </select>
+                </div>
+
+                {{-- Срок --}}
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Срок (дней)</span></label>
+                    <input type="number" name="duration_days" value="30" class="input input-bordered w-full" required />
+                </div>
+            </div>
+        </div>
+
+        {{-- БЛОК 3: Наполнение и Настройки --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {{-- Количество генераций --}}
+            <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Количество генераций</span></label>
+                <input type="number" name="generations_count" placeholder="50" class="input input-bordered w-full" required />
+            </div>
+
+            {{-- Сортировка --}}
+            <div class="form-control">
+                <label class="label"><span class="label-text">Порядок сортировки</span></label>
+                <input type="number" name="sort_order" value="0" class="input input-bordered w-full" />
+                <label class="label">
+                    <span class="label-text-alt text-gray-500">0 - самый первый в списке</span>
+                </label>
+            </div>
+        </div>
+
+        {{-- Описание --}}
+        <div class="form-control mb-6">
+            <label class="label"><span class="label-text">Описание (для администратора)</span></label>
+            <textarea name="description" class="textarea textarea-bordered h-20" placeholder="Заметка о тарифе..."></textarea>
+        </div>
+
+        {{-- АКТИВАЦИЯ (То, что просили добавить) --}}
+        <div class="form-control w-full sm:w-1/2 p-3 border rounded-lg hover:bg-base-200 transition-colors">
+            <label class="cursor-pointer label">
+              <span class="label-text font-bold">Сразу активировать?</span> 
+              {{-- checked по умолчанию, чтобы новый тариф сразу был виден --}}
+              <input type="checkbox" name="is_active" class="toggle toggle-success" checked />
+            </label>
+        </div>
+
+        {{-- Кнопки --}}
+        <div class="card-actions justify-end mt-8 pt-4 border-t border-base-200">
+            <a href="{{ route('admin.plans.index') }}" class="btn btn-ghost">Отмена</a>
+            <button type="submit" class="btn btn-primary">Создать тариф</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+@endslot
+@end

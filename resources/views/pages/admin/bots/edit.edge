@@ -1,0 +1,87 @@
+@layout.app({ title: "Настройка бота" })
+@slot('main')
+
+<div class="max-w-4xl mx-auto">
+  <h1 class="text-2xl font-bold mb-6">Настройка: {{ bot.name }}</h1>
+
+  <form action="{{ route('admin.bots.update', { id: bot.id }) }}" method="POST">
+    {{ csrfField() }}
+
+    {{-- Основные настройки --}}
+    <div class="card bg-base-100 shadow mb-6">
+        <div class="card-body">
+            <h3 class="card-title">Основное</h3>
+            
+            <div class="form-control">
+                <label class="label">Название</label>
+                <input type="text" name="name" value="{{ bot.name }}" class="input input-bordered">
+            </div>
+            
+            <div class="form-control">
+                <label class="label">Token</label>
+                <input type="text" name="token" value="{{ bot.token }}" class="input input-bordered font-mono text-sm">
+            </div>
+
+            <div class="form-control">
+                <label class="label">Приветствие (/start)</label>
+                <textarea name="welcome_text" class="textarea textarea-bordered h-24">{{ bot.config?.welcome_text || '' }}</textarea>
+            </div>
+
+            <div class="form-control w-52 mt-4">
+                <label class="cursor-pointer label">
+                  <span class="label-text">Бот включен?</span> 
+                  <input type="checkbox" name="is_active" class="toggle toggle-primary" {{ bot.isActive ? 'checked' : '' }} />
+                </label>
+            </div>
+        </div>
+    </div>
+
+    {{-- Платежка LAVA --}}
+    <div class="card bg-base-100 shadow mb-6 border-l-4 border-orange-500">
+        <div class="card-body">
+            <div class="flex justify-between">
+                <h3 class="card-title">Lava.ru</h3>
+                <input type="checkbox" name="lava[is_enabled]" class="toggle toggle-sm" 
+                       {{ paymentMap.lava_ru?.is_enabled ? 'checked' : '' }} />
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-control">
+                    <label class="label">Shop ID</label>
+                    <input type="text" name="lava[shop_id]" value="{{ paymentMap.lava_ru?.shop_id || '' }}" class="input input-bordered input-sm">
+                </div>
+                <div class="form-control">
+                    <label class="label">Secret Key</label>
+                    <input type="text" name="lava[secret_key]" value="{{ paymentMap.lava_ru?.secret_key || '' }}" class="input input-bordered input-sm">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Платежка HELEKET --}}
+    <div class="card bg-base-100 shadow mb-6 border-l-4 border-purple-500">
+        <div class="card-body">
+            <div class="flex justify-between">
+                <h3 class="card-title">Heleket</h3>
+                <input type="checkbox" name="heleket[is_enabled]" class="toggle toggle-sm"
+                       {{ paymentMap.heleket?.is_enabled ? 'checked' : '' }} />
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-control">
+                    <label class="label">Merchant ID</label>
+                    <input type="text" name="heleket[merchant_id]" value="{{ paymentMap.heleket?.merchant_id || '' }}" class="input input-bordered input-sm">
+                </div>
+                <div class="form-control">
+                    <label class="label">Secret Key</label>
+                    <input type="text" name="heleket[secret_key]" value="{{ paymentMap.heleket?.secret_key || '' }}" class="input input-bordered input-sm">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-full">Сохранить изменения</button>
+  </form>
+</div>
+@endslot
+@end

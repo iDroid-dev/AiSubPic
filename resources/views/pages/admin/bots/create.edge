@@ -1,0 +1,49 @@
+@layout.app({ title: "Добавить бота" })
+
+@slot('main')
+<div class="max-w-md mx-auto mt-10">
+  <div class="text-sm breadcrumbs mb-4">
+    <ul>
+      <li><a href="{{ route('admin.dashboard') }}">Дашборд</a></li> 
+      <li><a href="{{ route('admin.bots.index') }}">Боты</a></li> 
+      <li>Добавление</li>
+    </ul>
+  </div>
+
+  <div class="card bg-base-100 shadow-xl border border-base-200">
+    <div class="card-body">
+      <h2 class="card-title text-2xl mb-4">Новый Telegram Бот</h2>
+      
+      <form action="{{ route('admin.bots.store') }}" method="POST">
+        {{ csrfField() }}
+
+        {{-- Название --}}
+        <div class="form-control w-full mb-4">
+          <label class="label">
+            <span class="label-text">Название (для админки)</span>
+          </label>
+          <input type="text" name="name" placeholder="Например: Основной бот" class="input input-bordered w-full" required />
+        </div>
+
+        {{-- Токен --}}
+        <div class="form-control w-full mb-6">
+          <label class="label">
+            <span class="label-text">API Token (от BotFather)</span>
+          </label>
+          <input type="text" name="token" placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11" class="input input-bordered w-full font-mono text-sm" required />
+          <label class="label">
+            <span class="label-text-alt text-gray-500">Мы проверим токен автоматически перед сохранением.</span>
+          </label>
+        </div>
+
+        <div class="card-actions justify-end">
+          <a href="{{ route('admin.bots.index') }}" class="btn btn-ghost">Отмена</a>
+          <button type="submit" class="btn btn-primary">Добавить бота</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+@endslot
+@end

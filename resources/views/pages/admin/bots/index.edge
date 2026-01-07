@@ -1,0 +1,38 @@
+@layout.app({ title: "Боты" })
+@slot('main')
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Мои Боты</h1>
+    <a href="{{ route('admin.bots.create') }}" class="btn btn-primary">+ Добавить бота</a>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    @each(bot in bots)
+      <div class="card bg-base-100 shadow-xl border border-base-200">
+        <div class="card-body">
+          <h2 class="card-title">
+            {{ bot.name }}
+            @if(bot.isActive)
+              <div class="badge badge-success badge-xs">Active</div>
+            @else
+              <div class="badge badge-ghost badge-xs">Off</div>
+            @endif
+          </h2>
+          <p class="text-sm opacity-70">@ {{ bot.username }}</p>
+          
+          <div class="card-actions justify-end mt-4">
+            {{-- Кнопка Вебхука --}}
+            <form action="{{ route('admin.bots.webhook', { id: bot.id }) }}" method="POST">
+               {{ csrfField() }}
+               <button class="btn btn-xs btn-outline">🔄 Set Webhook</button>
+            </form>
+            <a href="{{ route('admin.bots.edit', { id: bot.id }) }}" class="btn btn-sm btn-accent">Настроить</a>
+          </div>
+        </div>
+      </div>
+    @endeach
+  </div>
+
+@end
+
+  @endslot
+  @end
