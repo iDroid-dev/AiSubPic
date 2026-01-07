@@ -1,0 +1,44 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # Используем стандартный раннер
+
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # 1. Переходим в папку проекта
+            cd ~/aisubpic
+
+            # 2. Обновляем код
+            # Сбрасываем локальные изменения (если вдруг были)
+            git reset --hard origin/main
+            git pull origin main
+
+            # 3. Пересоздаем .env файл из секретов
+            echo "${{ secrets.ENV_FILE_PRODUCTION }}" > .env
+
+            # 4. Пересобираем и запускаем контейнеры
+            # --build пересобирает image приложения
+            docker compose up --build -d app
+
+            # 5. Перезапускаем Nginx (на случай изменений конфига)
+            docker compose restart nginx
+
+            # 6. Запускаем миграции
+            # Ждем пару секунд, пока база поднимется (на всякий случай)
+            sleep 5
+            docker compose exec -T app node ace migration:run --force
+
+            # 7. Чистим мусор (старые образы)
+            docker image prune -f
