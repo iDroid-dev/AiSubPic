@@ -22,7 +22,7 @@ export default defineConfig({
   server: {
     allowedHosts: [
       'aisubpic.ru',      // 👈 Добавьте ваш домен
-      'wwww.aisubpic.ru', // Можно добавить и с www
+      'www.aisubpic.ru', // Можно добавить и с www
     ],
   }
 })
