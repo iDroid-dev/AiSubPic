@@ -2,6 +2,7 @@ services:
   # Ваше приложение Adonis
   app:
     container_name: aisubpic_app
+    image: ghcr.io/idroid-dev/aisubpic:latest
     build:
       context: .
       dockerfile: Dockerfile
