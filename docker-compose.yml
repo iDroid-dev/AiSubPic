@@ -50,7 +50,7 @@ services:
       - ./nginx/conf:/etc/nginx/conf.d
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
-      - ./public:/app/public:ro
+      - ./:/app
     networks:
       - web
     depends_on:
