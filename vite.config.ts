@@ -16,6 +16,13 @@ export default defineConfig({
        * Paths to watch and reload the browser on file change
        */
       reload: ['resources/views/**/*.edge'],
+      
     }),
   ],
+  server: {
+    allowedHosts: [
+      'aisubpic.ru',      // 👈 Добавьте ваш домен
+      'wwww.aisubpic.ru', // Можно добавить и с www
+    ],
+  }
 })
