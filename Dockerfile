@@ -1,16 +1,32 @@
-FROM node:22-alpine
+FROM node:22-alpine AS base
 
+# 1. Установка зависимостей
+FROM base AS deps
 WORKDIR /app
+ADD package.json package-lock.json ./
+RUN npm ci
 
-# Устанавливаем зависимости
-COPY package*.json ./
-RUN npm install
+# 2. Зависимости только для продакшена
+FROM base AS production-deps
+WORKDIR /app
+ADD package.json package-lock.json ./
+RUN npm ci --omit=dev
 
-# Копируем исходный код
-COPY . .
+# 3. Сборка (Build)
+FROM base AS build
+WORKDIR /app
+COPY --from=deps /app/node_modules /app/node_modules
+ADD . .
+RUN node ace build --ignore-ts-errors
 
-# Открываем порт
+# 4. Финальный образ (Production)
+FROM base
+ENV NODE_ENV=production
+WORKDIR /app
+# Копируем только то, что нужно для работы
+COPY --from=production-deps /app/node_modules /app/node_modules
+COPY --from=build /app/build .
+# Копируем .env если он нужен внутри (но лучше через docker-compose)
+# EXPOSE должен совпадать с портом Adonis (3333)
 EXPOSE 3333
-
-# Запуск в режиме разработки (для продакшена команда будет другой)
-CMD ["npm", "run", "dev"]
+CMD ["node", "bin/server.js"]
