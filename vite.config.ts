@@ -19,6 +19,11 @@ export default defineConfig({
       
     }),
   ],
+    build: {
+    manifest: true,
+    outDir: 'public/assets',
+    emptyOutDir: true,
+  },
   server: {
     allowedHosts: [
       'aisubpic.ru',      // 👈 Добавьте ваш домен
