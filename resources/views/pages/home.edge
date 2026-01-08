@@ -156,20 +156,27 @@
     </div>
   </section>
 
-  {{-- Pricing Section --}}
+{{-- Pricing Section --}}
   <section id="pricing" class="py-24 relative">
     <div class="container mx-auto px-4">
       <div class="text-center mb-16">
         <h2 class="text-4xl font-bold mb-4">Выберите свой план</h2>
-        <p class="text-base-content/60">Начните с малого или возьмите максимум.</p>
+        <p class="text-base-content/60">Начните создавать шедевры прямо сейчас. Пополнение баланса мгновенно.</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        @each(plan in plans)
+        {{-- Статический массив планов прямо в шаблоне --}}
+        @assign(myPlans = [
+          { id: 'start', name: 'Старт', price: 149, count: 100, desc: 'Подойдет для знакомства' },
+          { id: 'hit', name: 'Популярный', price: 499, count: 500, desc: 'Лучшее соотношение цены' },
+          { id: 'pro', name: 'Максимум', price: 999, count: 1500, desc: 'Для профессионалов' }
+        ])
+
+        @each(plan in myPlans)
           <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 border border-base-content/10 relative overflow-hidden group">
             
-            {{-- Выделение популярного тарифа (средний по цене или по логике) --}}
-            @if(plan.price >= 300 && plan.price <= 400)
+            {{-- Выделение популярного тарифа --}}
+            @if(plan.id === 'hit')
               <div class="absolute top-0 right-0 bg-primary text-primary-content text-xs font-bold px-3 py-1 rounded-bl-lg z-10">
                 ХИТ
               </div>
@@ -178,49 +185,40 @@
             <div class="card-body items-center text-center">
               <h3 class="font-bold text-lg uppercase tracking-widest opacity-70 mb-2">{{ plan.name }}</h3>
               <div class="text-5xl font-extrabold mb-1">
-                {{ Math.round(plan.price) }}₽
+                {{ plan.price }}₽
               </div>
-              <div class="text-sm opacity-50 mb-6">/ навсегда</div>
+              <div class="text-sm opacity-50 mb-6">оплата разово</div>
               
               <ul class="w-full space-y-3 mb-8 text-left">
                 <li class="flex items-center gap-2">
                   <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                  <span class="font-bold text-base-content">{{ plan.generationsCount }} генераций</span>
+                  <span class="font-bold text-base-content">{{ plan.count }} генераций</span>
                 </li>
                 <li class="flex items-center gap-2">
                   <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                  <span>Доступ ко всем стилям</span>
+                  <span>Модель Flux Schnell</span>
                 </li>
                 <li class="flex items-center gap-2">
                   <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                  <span>Быстрая очередь</span>
+                  <span>Без ограничений по времени</span>
                 </li>
-                @if(plan.description)
-                  <li class="text-xs text-base-content/50 italic mt-2 pt-2 border-t border-base-content/10">
-                    {{ plan.description }}
-                  </li>
-                @endif
+                <li class="text-xs text-base-content/50 italic mt-2 pt-2 border-t border-base-content/10">
+                  {{ plan.desc }}
+                </li>
               </ul>
 
               <div class="card-actions w-full">
+                {{-- Замени ТВОЙ_БОТ на реальный юзернейм в ссылке ниже --}}
                 <a href="https://t.me/ТВОЙ_БОТ?start=buy_{{ plan.id }}" class="btn btn-primary w-full shadow-lg group-hover:scale-[1.02] transition-transform">
-                  Выбрать тариф
+                  Купить пакет
                 </a>
               </div>
             </div>
           </div>
         @endeach
-        
-        {{-- Если тарифов нет, покажем заглушку --}}
-        @if(plans.length === 0)
-           <div class="col-span-3 text-center text-gray-500 py-10">
-             Тарифы загружаются...
-           </div>
-        @endif
       </div>
     </div>
   </section>
-
   {{-- Footer --}}
   <footer class="footer p-10 bg-neutral text-neutral-content">
     <div class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
