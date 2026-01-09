@@ -32,4 +32,4 @@ COPY --from=build /app/build .
 RUN mv public public_source
 
 EXPOSE 3333
-CMD ["node", "bin/server.js"]
+ 
