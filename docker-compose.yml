@@ -51,7 +51,6 @@ services:
       - ./nginx/conf:/etc/nginx/conf.d
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
-      - ./:/app
       - static_content:/app/public
     networks:
       - web

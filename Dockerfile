@@ -28,5 +28,8 @@ COPY --from=production-deps /app/node_modules /app/node_modules
 COPY --from=build /app/build .
 # Копируем .env если он нужен внутри (но лучше через docker-compose)
 # EXPOSE должен совпадать с портом Adonis (3333)
+
+RUN mv public public_source
+
 EXPOSE 3333
 CMD ["node", "bin/server.js"]
