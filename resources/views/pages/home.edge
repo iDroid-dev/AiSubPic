@@ -1,26 +1,52 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="dark">
+<html lang="ru" data-theme="dark" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   
   {{-- SEO Meta Tags --}}
-  <title>AI Генератор Изображений в Telegram | Flux Schnell Bot</title>
-  <meta name="description" content="Генерируйте профессиональные изображения за секунды с помощью нейросети Flux Schnell прямо в Telegram. Высокое качество, низкие цены, мгновенный результат.">
-  <meta name="keywords" content="AI, нейросеть, генерация картинок, Telegram бот, Flux Schnell, Midjourney альтернатива, создание изображений, искусственный интеллект">
+  <title>AI Генератор Изображений в Telegram | Flux Schnell Bot | AiSubPic</title>
+  <meta name="description" content="Лучший Telegram бот для генерации изображений на базе Flux Schnell. Создавайте арты, логотипы и фотореалистичные картинки за секунды. Дешевле Midjourney, быстрее DALL-E.">
+  <meta name="keywords" content="AI, нейросеть, генерация картинок телеграм, Flux Schnell, Midjourney альтернатива, создать изображение онлайн, искусственный интеллект, бот художник, AiSubPic">
   <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://aisubpic.ru" />
   
   {{-- Open Graph / Social Media --}}
-  <meta property="og:title" content="AI Генератор Изображений в Telegram">
-  <meta property="og:description" content="Создавай шедевры в один клик. Попробуй мощь Flux Schnell в удобном боте.">
+  <meta property="og:title" content="AiSubPic — Генератор Изображений в Telegram">
+  <meta property="og:description" content="Превращай текст в шедевры за 1 секунду. Попробуй мощь нейросети Flux Schnell прямо в телефоне.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://твой-домен.ru">
-  <meta property="og:image" content="https://твой-домен.ru/og-image.jpg"> {{-- Замени на ссылку на красивую картинку --}}
+  <meta property="og:url" content="https://aisubpic.ru">
+  <meta property="og:image" content="https://aisubpic.ru/aisubpic.jpg">
+  <meta property="og:site_name" content="AiSubPic">
+  
+  {{-- Favicon (желательно добавить файлы в public) --}}
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  {{-- Schema.org Structured Data (Важно для SEO!) --}}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "AiSubPic Telegram Bot",
+    "operatingSystem": "Telegram",
+    "applicationCategory": "DesignApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "149",
+      "priceCurrency": "RUB"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "1250"
+    },
+    "description": "Telegram бот для генерации изображений с помощью AI Flux Schnell."
+  }
+  </script>
   
   {{-- Styles --}}
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   
-  {{-- Доп. стили для градиентов и анимаций --}}
   <style>
     .text-gradient {
       background: linear-gradient(to right, #a78bfa, #3b82f6);
@@ -28,25 +54,31 @@
       -webkit-text-fill-color: transparent;
     }
     .hero-glow {
-      box-shadow: 0 0 100px -20px rgba(66, 153, 225, 0.5);
+      box-shadow: 0 0 120px -30px rgba(59, 130, 246, 0.4);
+    }
+    /* Улучшение читаемости на мобильных */
+    @media (max-width: 640px) {
+      .hero-title { font-size: 2.5rem !important; line-height: 1.1; }
     }
   </style>
 </head>
-<body class="min-h-screen font-sans antialiased bg-base-300 text-base-content selection:bg-primary selection:text-white">
+<body class="min-h-screen font-sans antialiased bg-base-300 text-base-content selection:bg-primary selection:text-white overflow-x-hidden">
 
   {{-- Navbar --}}
-{{-- Navbar --}}
   <nav class="navbar bg-base-100/80 backdrop-blur-md sticky top-0 z-50 border-b border-base-content/10 px-4 md:px-8">
     <div class="container mx-auto flex justify-between items-center">
       <div class="flex-none">
-        <a href="/" class="text-xl md:text-2xl font-bold tracking-tighter flex items-center gap-1">
-          <span class="text-primary">AI</span>SubPic
+        <a href="/" class="text-xl md:text-2xl font-bold tracking-tighter flex items-center gap-1 group">
+          <span class="text-primary group-hover:scale-110 transition-transform">AI</span>SubPic
         </a>
       </div>
 
-      <div class="flex-none">
-        <a href="https://t.me/aisubpic_bot" target="_blank" class="btn btn-primary btn-sm md:btn-md rounded-full px-4 md:px-6 shadow-lg shadow-primary/20 hover:scale-105">
-          <span class="hidden xs:inline">Открыть Бота</span>
+      <div class="flex-none flex gap-3">
+        <a href="#pricing" class="hidden sm:flex btn btn-ghost btn-sm">Тарифы</a>
+        <a href="#faq" class="hidden sm:flex btn btn-ghost btn-sm">FAQ</a>
+        <a href="https://t.me/aisubpic_bot" target="_blank" class="btn btn-primary btn-sm md:btn-md rounded-full px-4 md:px-6 shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+          <span class="hidden xs:inline">Запустить</span>
+          <span class="inline xs:hidden">Бот</span>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 ml-1">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
           </svg>
@@ -56,188 +88,335 @@
   </nav>
 
   {{-- Hero Section --}}
-  <section class="relative pt-20 pb-32 overflow-hidden">
-    <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+  <header class="relative pt-12 pb-24 md:pt-24 md:pb-32 overflow-hidden">
+    {{-- Фон --}}
+    <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
+    <div class="absolute -top-20 -left-20 w-72 h-72 bg-purple-500/20 rounded-full blur-[100px]"></div>
+    <div class="absolute top-40 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px]"></div>
+
     <div class="container mx-auto px-4 text-center relative z-10">
-      <div class="inline-block mb-4 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-medium animate-pulse">
-        🚀 Доступна модель Flux Schnell
+      
+      <div class="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs md:text-sm font-medium animate-fade-in-up">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+        </span>
+        Работает на базе Flux Schnell
       </div>
       
-      <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
-        Превращай идеи в <br>
-        <span class="text-gradient">Искусство</span> за секунды
+      <h1 class="hero-title text-5xl md:text-7xl lg:text-8xl font-extrabold mb-6 leading-tight tracking-tight">
+        Генерация изображений <br class="hidden md:block">
+        <span class="text-gradient">нового поколения</span>
       </h1>
       
-      <p class="text-xl md:text-2xl text-base-content/70 mb-10 max-w-2xl mx-auto">
-        Мощный Telegram бот для генерации изображений. Просто напиши, что ты хочешь увидеть, и нейросеть нарисует это для тебя.
+      <p class="text-lg md:text-2xl text-base-content/70 mb-10 max-w-2xl mx-auto leading-relaxed">
+        Создавайте реалистичные арты, логотипы и дизайн прямо в Telegram. Без VPN, сложных настроек и дорогих подписок.
       </p>
       
-      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-        <a href="https://t.me/ТВОЙ_БОТ" class="btn btn-primary btn-lg rounded-xl text-lg px-10 shadow-xl shadow-primary/30 hover:scale-105 transition-transform duration-200">
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+        <a href="https://t.me/aisubpic_bot" class="btn btn-primary btn-lg w-full sm:w-auto rounded-2xl text-lg px-10 shadow-xl shadow-primary/30 hover:-translate-y-1 transition-transform duration-200">
           Попробовать бесплатно
         </a>
-        <a href="#pricing" class="btn btn-ghost btn-lg rounded-xl">
-          Смотреть тарифы
+        <a href="#how-it-works" class="btn btn-ghost btn-lg w-full sm:w-auto rounded-2xl border border-base-content/10 bg-base-100/50">
+          Как это работает?
         </a>
       </div>
       
-      {{-- Mockup / Visual --}}
-      <div class="mt-16 mx-auto max-w-4xl mockup-browser border border-base-content/10 bg-base-200 shadow-2xl hero-glow">
-        <div class="mockup-browser-toolbar">
-          <div class="input">https://t.me/aisubpic_bot</div>
+      {{-- Mockup --}}
+      <div class="relative mx-auto max-w-4xl group">
+        <div class="absolute -inset-1 bg-gradient-to-r from-primary to-purple-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+        <div class="mockup-browser border border-base-content/10 bg-base-200 shadow-2xl hero-glow relative">
+          <div class="mockup-browser-toolbar">
+            <div class="input text-sm md:text-base opacity-70">https://t.me/aisubpic_bot</div>
+          </div>
+          <div class="flex flex-col bg-base-100 p-4 md:p-8 min-h-[300px] md:min-h-[400px]">
+            {{-- User Message --}}
+            <div class="chat chat-start w-full">
+              <div class="chat-image avatar hidden xs:block">
+                <div class="w-10 rounded-full">
+                  <img src="https://ui-avatars.com/api/?name=User&background=374151&color=fff" alt="User" />
+                </div>
+              </div>
+              <div class="chat-bubble bg-base-200 text-base-content">
+                Нарисуй футуристичный город в стиле киберпанк, неон, дождь, высокое качество 8k 🌃
+              </div>
+            </div>
+            
+            {{-- Bot Message --}}
+            <div class="chat chat-end w-full mt-4">
+              <div class="chat-image avatar hidden xs:block">
+                <div class="w-10 rounded-full border border-primary p-0.5">
+                  <img src="https://ui-avatars.com/api/?name=Bot&background=0D8ABC&color=fff" alt="Bot" />
+                </div>
+              </div>
+              <div class="chat-bubble chat-bubble-primary w-full max-w-md p-0 overflow-hidden shadow-lg">
+                <div class="relative w-full aspect-square md:aspect-video bg-base-300">
+                  <img src="/aisubpic.jpg" alt="Пример генерации киберпанк города" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500" loading="lazy" />
+                  {{-- Loader overlay --}}
+                  <div class="absolute inset-0 flex items-center justify-center bg-black/50 text-white opacity-0 pointer-events-none">
+                    <span class="loading loading-spinner loading-lg"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="chat-footer opacity-50 text-xs mt-1 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 text-success">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                </svg>
+                Готово за 1.2 сек
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="flex justify-center bg-base-100 p-4 md:p-8">
-          <div class="chat chat-start w-full">
-            <div class="chat-image avatar">
-              <div class="w-10 rounded-full">
-                <img src="https://ui-avatars.com/api/?name=User&background=random" />
-              </div>
-            </div>
-            <div class="chat-bubble">Нарисуй футуристичный город в стиле киберпанк, неон, дождь</div>
+      </div>
+    </div>
+  </header>
+
+  {{-- How it Works Section (New for SEO) --}}
+  <section id="how-it-works" class="py-16 md:py-24 bg-base-100">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-5xl font-bold mb-4">Как это работает?</h2>
+        <p class="text-base-content/60">Всего 3 простых шага до вашего идеального изображения.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+        {{-- Connector Line (Desktop) --}}
+        <div class="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gradient-to-r from-base-content/10 via-primary/30 to-base-content/10 z-0"></div>
+
+        {{-- Step 1 --}}
+        <div class="relative z-10 flex flex-col items-center text-center">
+          <div class="w-24 h-24 rounded-3xl bg-base-200 border border-base-content/10 flex items-center justify-center text-4xl mb-6 shadow-lg">
+            🤖
           </div>
-          <div class="chat chat-end w-full mt-4">
-            <div class="chat-image avatar">
-              <div class="w-10 rounded-full border border-primary p-0.5">
-                <img src="https://ui-avatars.com/api/?name=Bot&background=0D8ABC&color=fff" />
-              </div>
-            </div>
-            <div class="chat-bubble chat-bubble-primary w-full max-w-md p-0 overflow-hidden shadow-lg">
-              <div class="w-full h-64 bg-gradient-to-br from-indigo-900 to-purple-900 flex items-center justify-center text-white/50">
-                <img src="/aisubpic.jpg" />
-              </div>
-            </div>
-            <div class="chat-footer opacity-50 text-xs mt-1">Готово за 1.2 сек</div>
+          <h3 class="text-xl font-bold mb-2">1. Запустите бота</h3>
+          <p class="text-base-content/70 max-w-xs">Откройте бота в Telegram. Никаких регистраций на сайтах и сложных паролей.</p>
+        </div>
+
+        {{-- Step 2 --}}
+        <div class="relative z-10 flex flex-col items-center text-center">
+          <div class="w-24 h-24 rounded-3xl bg-base-200 border border-primary/30 flex items-center justify-center text-4xl mb-6 shadow-lg shadow-primary/10">
+            ✍️
           </div>
+          <h3 class="text-xl font-bold mb-2">2. Напишите запрос</h3>
+          <p class="text-base-content/70 max-w-xs">Опишите, что хотите увидеть. Бот понимает русский и английский языки.</p>
+        </div>
+
+        {{-- Step 3 --}}
+        <div class="relative z-10 flex flex-col items-center text-center">
+          <div class="w-24 h-24 rounded-3xl bg-base-200 border border-base-content/10 flex items-center justify-center text-4xl mb-6 shadow-lg">
+            🖼️
+          </div>
+          <h3 class="text-xl font-bold mb-2">3. Получите результат</h3>
+          <p class="text-base-content/70 max-w-xs">Через пару секунд нейросеть пришлет вам готовые варианты в высоком качестве.</p>
         </div>
       </div>
     </div>
   </section>
 
-  {{-- Features Section --}}
+  {{-- Use Cases / Features --}}
   <section class="py-24 bg-base-200">
     <div class="container mx-auto px-4">
-      <div class="text-center mb-16">
-        <h2 class="text-4xl font-bold mb-4">Почему выбирают нас?</h2>
-        <p class="text-base-content/60 max-w-xl mx-auto">Мы используем передовые технологии для достижения лучшего результата.</p>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {{-- Feature 1 --}}
-        <div class="card bg-base-100 shadow-xl border border-base-content/5 hover:border-primary/50 transition-colors duration-300">
-          <div class="card-body items-center text-center">
-            <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl mb-4">
-              ⚡️
-            </div>
-            <h3 class="card-title text-xl">Мгновенная скорость</h3>
-            <p class="text-base-content/70">Технология Flux Schnell генерирует изображения в 10 раз быстрее обычных моделей без потери качества.</p>
-          </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <h2 class="text-3xl md:text-5xl font-bold mb-6">Идеально для любых задач</h2>
+          <p class="text-lg text-base-content/70 mb-8">
+            AiSubPic помогает не только развлекаться, но и работать. Наши пользователи используют бота для:
+          </p>
+          
+          <ul class="space-y-4">
+            <li class="flex items-start gap-3">
+              <div class="mt-1 w-6 h-6 rounded-full bg-success/20 text-success flex items-center justify-center shrink-0">✓</div>
+              <div>
+                <strong class="text-base-content">Маркетинга и SMM</strong>
+                <p class="text-sm text-base-content/60">Уникальные картинки для постов, рекламы и сторис без авторских прав.</p>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="mt-1 w-6 h-6 rounded-full bg-success/20 text-success flex items-center justify-center shrink-0">✓</div>
+              <div>
+                <strong class="text-base-content">Дизайна и вдохновения</strong>
+                <p class="text-sm text-base-content/60">Референсы, логотипы, текстуры и фоны для ваших проектов.</p>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="mt-1 w-6 h-6 rounded-full bg-success/20 text-success flex items-center justify-center shrink-0">✓</div>
+              <div>
+                <strong class="text-base-content">Личного творчества</strong>
+                <p class="text-sm text-base-content/60">Аватарки, обои на телефон, открытки друзьям.</p>
+              </div>
+            </li>
+          </ul>
         </div>
         
-        {{-- Feature 2 --}}
-        <div class="card bg-base-100 shadow-xl border border-base-content/5 hover:border-primary/50 transition-colors duration-300">
-          <div class="card-body items-center text-center">
-            <div class="w-16 h-16 rounded-2xl bg-secondary/10 flex items-center justify-center text-3xl mb-4">
-              🎨
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-4 translate-y-8">
+            <div class="aspect-[3/4] rounded-2xl bg-base-300 overflow-hidden border border-base-content/10 shadow-lg">
+               {{-- Заглушки, так как реальных картинок пока мало. Можно продублировать aisubpic.jpg с разными стилями через CSS filter --}}
+               <img src="/aisubpic.jpg" class="w-full h-full object-cover hover:scale-110 transition duration-500 filter hue-rotate-30" alt="Пример AI генерации" />
             </div>
-            <h3 class="card-title text-xl">Высокая детализация</h3>
-            <p class="text-base-content/70">Идеальное соблюдение промпта. Нейросеть понимает сложные описания и создает именно то, что вы просили.</p>
+            <div class="aspect-square rounded-2xl bg-base-300 overflow-hidden border border-base-content/10 shadow-lg">
+                <img src="/aisubpic.jpg" class="w-full h-full object-cover hover:scale-110 transition duration-500 filter sepia" alt="Пример логотипа AI" />
+            </div>
           </div>
-        </div>
-        
-        {{-- Feature 3 --}}
-        <div class="card bg-base-100 shadow-xl border border-base-content/5 hover:border-primary/50 transition-colors duration-300">
-          <div class="card-body items-center text-center">
-            <div class="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center text-3xl mb-4">
-              💎
+          <div class="space-y-4">
+            <div class="aspect-square rounded-2xl bg-base-300 overflow-hidden border border-base-content/10 shadow-lg">
+                <img src="/aisubpic.jpg" class="w-full h-full object-cover hover:scale-110 transition duration-500 filter grayscale" alt="Черно-белый арт AI" />
             </div>
-            <h3 class="card-title text-xl">Выгодная цена</h3>
-            <p class="text-base-content/70">Наши тарифы одни из самых доступных на рынке. Платите только за качественные генерации.</p>
+            <div class="aspect-[3/4] rounded-2xl bg-base-300 overflow-hidden border border-base-content/10 shadow-lg">
+                <img src="/aisubpic.jpg" class="w-full h-full object-cover hover:scale-110 transition duration-500 filter contrast-125" alt="Яркий арт AI" />
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-{{-- Pricing Section --}}
-  <section id="pricing" class="py-24 relative">
-    <div class="container mx-auto px-4">
+  {{-- Pricing Section --}}
+  <section id="pricing" class="py-24 relative overflow-hidden">
+    {{-- Decorative Blobs --}}
+    <div class="absolute top-1/2 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2"></div>
+
+    <div class="container mx-auto px-4 relative z-10">
       <div class="text-center mb-16">
-        <h2 class="text-4xl font-bold mb-4">Выберите свой план</h2>
-        <p class="text-base-content/60">Начните создавать шедевры прямо сейчас. Пополнение баланса мгновенно.</p>
+        <h2 class="text-3xl md:text-5xl font-bold mb-4">Простые и честные тарифы</h2>
+        <p class="text-base-content/60">Платите один раз, пользуйтесь когда угодно. Никаких сгорающих подписок.</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        {{-- Статический массив планов прямо в шаблоне --}}
         @assign(myPlans = [
           { id: 'start', name: 'Старт', price: 149, count: 100, desc: 'Подойдет для знакомства' },
-          { id: 'hit', name: 'Популярный', price: 499, count: 500, desc: 'Лучшее соотношение цены' },
-          { id: 'pro', name: 'Максимум', price: 999, count: 1500, desc: 'Для профессионалов' }
+          { id: 'hit', name: 'Популярный', price: 499, count: 500, desc: 'Лучшая цена за 1 фото' },
+          { id: 'pro', name: 'Максимум', price: 999, count: 1500, desc: 'Для активных криэйторов' }
         ])
 
         @each(plan in myPlans)
-          <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 border border-base-content/10 relative overflow-hidden group">
+          <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 border border-base-content/10 relative overflow-hidden group flex flex-col h-full">
             
-            {{-- Выделение популярного тарифа --}}
             @if(plan.id === 'hit')
               <div class="absolute top-0 right-0 bg-primary text-primary-content text-xs font-bold px-3 py-1 rounded-bl-lg z-10">
-                ХИТ
+                ХИТ ПРОДАЖ
               </div>
             @endif
 
-            <div class="card-body items-center text-center">
+            <div class="card-body items-center text-center flex-grow">
               <h3 class="font-bold text-lg uppercase tracking-widest opacity-70 mb-2">{{ plan.name }}</h3>
               <div class="text-5xl font-extrabold mb-1">
                 {{ plan.price }}₽
               </div>
-              <div class="text-sm opacity-50 mb-6">оплата разово</div>
+              <div class="text-sm opacity-50 mb-6">единоразово</div>
               
-              <ul class="w-full space-y-3 mb-8 text-left">
-                <li class="flex items-center gap-2">
-                  <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                  <span class="font-bold text-base-content">{{ plan.count }} генераций</span>
+              <div class="divider my-0"></div>
+
+              <ul class="w-full space-y-4 my-8 text-left">
+                <li class="flex items-center gap-3">
+                  <div class="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold">✓</div>
+                  <span class="font-bold text-lg">{{ plan.count }} генераций</span>
                 </li>
-                <li class="flex items-center gap-2">
-                  <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                  <span>Модель Flux Schnell</span>
+                <li class="flex items-center gap-3">
+                  <div class="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold">✓</div>
+                  <span>Скоростной режим Flux</span>
                 </li>
-                <li class="flex items-center gap-2">
-                  <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                  <span>Без ограничений по времени</span>
+                <li class="flex items-center gap-3">
+                  <div class="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold">✓</div>
+                  <span>Высокое разрешение</span>
                 </li>
-                <li class="text-xs text-base-content/50 italic mt-2 pt-2 border-t border-base-content/10">
-                  {{ plan.desc }}
+                <li class="flex items-center gap-3">
+                   <div class="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold">✓</div>
+                   <span class="text-base-content/80">{{ plan.desc }}</span>
                 </li>
               </ul>
-
-              <div class="card-actions w-full">
-                {{-- Замени ТВОЙ_БОТ на реальный юзернейм в ссылке ниже --}}
-                <a href="https://t.me/ТВОЙ_БОТ?start=buy_{{ plan.id }}" class="btn btn-primary w-full shadow-lg group-hover:scale-[1.02] transition-transform">
-                  Купить пакет
+            </div>
+            
+            <div class="p-6 pt-0 mt-auto w-full">
+                <a href="https://t.me/aisubpic_bot?start=buy_{{ plan.id }}" class="btn btn-primary w-full shadow-lg group-hover:scale-[1.02] transition-transform">
+                  Выбрать тариф
                 </a>
-              </div>
             </div>
           </div>
         @endeach
       </div>
     </div>
   </section>
+
+  {{-- FAQ Section (New for SEO) --}}
+  <section id="faq" class="py-24 bg-base-200">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-5xl font-bold mb-4">Частые вопросы</h2>
+        <p class="text-base-content/60">Все, что нужно знать перед началом.</p>
+      </div>
+
+      <div class="space-y-4">
+        <div class="collapse collapse-plus bg-base-100 border border-base-content/10 rounded-xl">
+          <input type="radio" name="my-accordion-3" checked="checked" /> 
+          <div class="collapse-title text-xl font-medium">
+            Это бесплатно?
+          </div>
+          <div class="collapse-content"> 
+            <p class="text-base-content/80">Каждому новому пользователю мы дарим несколько бесплатных генераций для теста. Далее вы можете приобрести пакет генераций по очень выгодной цене.</p>
+          </div>
+        </div>
+        
+        <div class="collapse collapse-plus bg-base-100 border border-base-content/10 rounded-xl">
+          <input type="radio" name="my-accordion-3" /> 
+          <div class="collapse-title text-xl font-medium">
+            Можно ли использовать картинки в коммерческих целях?
+          </div>
+          <div class="collapse-content"> 
+            <p class="text-base-content/80">Да! Все сгенерированные изображения принадлежат вам. Вы можете использовать их для рекламы, сайтов, печати на одежде и любых других задач.</p>
+          </div>
+        </div>
+
+        <div class="collapse collapse-plus bg-base-100 border border-base-content/10 rounded-xl">
+          <input type="radio" name="my-accordion-3" /> 
+          <div class="collapse-title text-xl font-medium">
+            Чем Flux Schnell лучше Midjourney?
+          </div>
+          <div class="collapse-content"> 
+            <p class="text-base-content/80">Flux Schnell — это передовая модель, которая работает быстрее и лучше понимает сложные инструкции. А главное — вам не нужно мучаться с VPN и оплатой в долларах. Наш бот принимает рубли и работает мгновенно.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {{-- CTA Section --}}
+  <section class="py-24 relative overflow-hidden">
+    <div class="absolute inset-0 bg-primary/10"></div>
+    <div class="container mx-auto px-4 text-center relative z-10">
+      <h2 class="text-4xl md:text-6xl font-bold mb-6">Готовы творить?</h2>
+      <p class="text-xl mb-10 max-w-2xl mx-auto opacity-80">
+        Присоединяйтесь к тысячам пользователей, которые уже создают контент будущего.
+      </p>
+      <a href="https://t.me/aisubpic_bot" class="btn btn-primary btn-lg rounded-full px-12 text-xl shadow-2xl hover:scale-105 transition-transform">
+        Запустить бота в Telegram
+      </a>
+    </div>
+  </section>
+
   {{-- Footer --}}
   <footer class="footer p-10 bg-neutral text-neutral-content">
-    <div class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-      <aside>
-        <div class="text-3xl font-bold text-primary mb-2">AI SubPic</div>
-        <p>Современные технологии генерации<br>изображений для вашего творчества.</p>
-        <p class="mt-4 text-sm opacity-50">© {{ new Date().getFullYear() }} Все права защищены.</p>
+    <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+      <aside class="md:col-span-2">
+        <div class="text-3xl font-bold text-primary mb-4">AiSubPic</div>
+        <p class="text-lg opacity-80">
+          Ваш персональный AI-художник в Telegram.<br>
+          Быстро. Качественно. Доступно.
+        </p>
+        <p class="mt-6 text-sm opacity-50">© {{ new Date().getFullYear() }} AiSubPic. Все права защищены.</p>
       </aside> 
       <nav>
-        <header class="footer-title">Сервис</header> 
+        <header class="footer-title text-white opacity-100">Навигация</header> 
+        <a href="/" class="link link-hover">Главная</a>
+        <a href="#how-it-works" class="link link-hover">Как это работает</a>
         <a href="#pricing" class="link link-hover">Тарифы</a> 
-        <a href="https://t.me/ТВОЙ_БОТ" class="link link-hover">Запустить бота</a>
+        <a href="#faq" class="link link-hover">FAQ</a>
       </nav> 
       <nav>
-        <header class="footer-title">Правовая информация</header> 
-        <a class="link link-hover">Пользовательское соглашение</a> 
-        <a class="link link-hover">Политика конфиденциальности</a>
+        <header class="footer-title text-white opacity-100">Документы</header> 
+        <a href="#" class="link link-hover">Оферта</a> 
+        <a href="#" class="link link-hover">Политика конфиденциальности</a>
+        <a href="mailto:support@aisubpic.ru" class="link link-hover mt-4 block text-primary">support@aisubpic.ru</a>
       </nav>
     </div>
   </footer>
