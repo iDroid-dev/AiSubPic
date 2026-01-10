@@ -37,8 +37,8 @@ router.group(() => {
   router.post('/bots', [BotsController, 'store']).as('admin.bots.store')
   router.get('/bots/:id', [BotsController, 'edit']).as('admin.bots.edit')
   router.post('/bots/:id', [BotsController, 'update']).as('admin.bots.update')
-  router.post('/bots/:id/webhook', [BotsController, 'setWebhook']).as('admin.bots.webhook')
-
+  router.post('/bots/:id/toggle', [BotsController, 'toggleStatus']).as('admin.bots.toggle')
+  router.delete('/bots/:id', [BotsController, 'delete']).as('admin.bots.delete')
   // === ТАРИФЫ ===
   router.get('/plans/:id/edit', [PlansController, 'edit']).as('admin.plans.edit')
   router.post('/plans/:id/edit', [PlansController, 'update']).as('admin.plans.update')

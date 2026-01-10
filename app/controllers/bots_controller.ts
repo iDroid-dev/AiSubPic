@@ -102,18 +102,70 @@ export default class BotsController {
     return response.redirect().back()
   }
 
-  // Установка Вебхука (волшебная кнопка)
-  public async setWebhook({ params, response, session }: HttpContext) {
+async toggleStatus({ params, response, session }: HttpContext) {
     const bot = await Bot.findOrFail(params.id)
-    const webhookUrl = `${env.get('APP_URL')}/webhooks/telegram/${bot.token}`
-    
-    try {
-      const tg = new GrammyBot(bot.token)
-      await tg.api.setWebhook(webhookUrl)
-      session.flash('success', `Вебхук установлен: ${webhookUrl}`)
-    } catch (error) {
-      session.flash('error', `Ошибка Telegram API: ${error.message}`)
+    // Берем домен из конфига или env. Если нет - используй свой прямой адрес
+    const DOMAIN = env.get('APP_URL') || 'https://aisubpic.ru' 
+
+    if (bot.isActive) {
+      // --- ОСТАНОВКА БОТА ---
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${bot.token}/deleteWebhook`)
+        const data = await res.json() as any
+        
+        if (!data.ok) {
+          session.flash('error', `Ошибка удаления Webhook: ${data.description}`)
+          // Мы не прерываем, так как в базе статус всё равно надо сменить
+        }
+      } catch (e) {
+        console.error('Telegram API Error', e)
+      }
+      
+      bot.isActive = false
+      await bot.save()
+      session.flash('success', 'Бот остановлен (Webhook удален)')
+
+    } else {
+      // --- ЗАПУСК БОТА ---
+      const webhookUrl = `${DOMAIN}/webhooks/telegram/${bot.token}`
+      
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${bot.token}/setWebhook?url=${webhookUrl}`)
+        const data = await res.json() as any
+
+        if (!data.ok) {
+          session.flash('error', `Telegram API Error: ${data.description}`)
+          return response.redirect().back()
+        }
+
+        bot.isActive = true
+        await bot.save()
+        session.flash('success', 'Бот успешно запущен!')
+      } catch (e) {
+        session.flash('error', 'Не удалось связаться с серверами Telegram')
+        return response.redirect().back()
+      }
     }
+
     return response.redirect().back()
   }
+
+  async delete({ params, response, session }: HttpContext) {
+  const bot = await Bot.findOrFail(params.id)
+
+  try {
+    // 1. Пытаемся удалить вебхук в Telegram перед удалением из базы
+    await fetch(`https://api.telegram.org/bot${bot.token}/deleteWebhook`)
+  } catch (e) {
+    console.error('Не удалось удалить вебхук при удалении бота', e)
+  }
+
+  // 2. Удаляем из базы
+  await bot.delete()
+
+  session.flash('success', `Бот ${bot.name} полностью удален`)
+  return response.redirect().back()
+}
+
+
 }
