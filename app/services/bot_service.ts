@@ -96,15 +96,21 @@ export default class BotService {
   }
 
   // === ОБРАБОТКА СООБЩЕНИЙ (Генерация) ===
-  private registerMessageHandlers() {
-    // Используем динамический импорт для AiService, чтобы не было проблем с путями
-    const AiService = require('#services/ai_service').default
-
+private registerMessageHandlers() {
     this.bot.on('message:text', async (ctx) => {
       if (!ctx.from || ctx.message.text.startsWith('/')) return
 
+      // Динамический импорт AI сервиса для ESM
+      const AiService = (await import('#services/ai_service')).default
+
+
+
       const globalUser = await User.findBy('telegramId', ctx.from.id)
-      if (!globalUser) return
+
+      // Проверка: если юзер не найден, выходим
+      if (!globalUser) {
+        return console.error('Пользователь не найден в базе данных')
+      }
 
       const botUser = await BotUser.query()
         .where('bot_id', this.config.id)
