@@ -15,31 +15,23 @@ const shieldConfig = defineConfig({
    * Configure CSRF protection options. Refer documentation
    * to learn more
    */
-  csrf: {
+csrf: {
     enabled: true,
     exceptRoutes: (ctx) => {
-      
+      const url = ctx.request.url() // Получаем относительный путь (напр. /webhooks/telegram/...)
 
-    const path = ctx.request.url(true) 
-     const excludedUrls = [
-    '/webhooks/*', // <-- Добавьте эту строку!
-    '/api/*'
-    ]
+      // Список префиксов, для которых CSRF не нужен
+      const excludedPrefixes = [
+        '/webhooks/',
+        '/api/'
+      ]
 
-    if(path.startsWith('/webhooks/')){
-        return true
-      }
- 
-      if (excludedUrls.includes(path)) {
-        return true
-      }
-      return false
+      // Проверяем, начинается ли текущий URL с одного из префиксов
+      return excludedPrefixes.some((prefix) => url.startsWith(prefix))
     },
     enableXsrfCookie: false,
     methods: ['POST', 'PUT', 'PATCH', 'DELETE'],
-  
-
-},
+  },
 
   /**
    * Control how your website should be embedded inside

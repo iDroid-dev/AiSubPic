@@ -155,7 +155,7 @@ async toggleStatus({ params, response, session }: HttpContext) {
 
   try {
     // 1. Пытаемся удалить вебхук в Telegram перед удалением из базы
-    await fetch(`https://api.telegram.org/bot${bot.token}/deleteWebhook`)
+   
   } catch (e) {
     console.error('Не удалось удалить вебхук при удалении бота', e)
   }
