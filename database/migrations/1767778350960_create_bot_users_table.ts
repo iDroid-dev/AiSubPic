@@ -14,7 +14,8 @@ export default class extends BaseSchema {
       // Важно: Уникальная пара. Один юзер не может быть добавлен в одного бота дважды.
       table.unique(['bot_id', 'user_id'])
 
-      table.timestamp('created_at') // Дата первого запуска
+      table.timestamp('created_at') 
+      table.dropColumn('updated_at')
     })
   }
 
