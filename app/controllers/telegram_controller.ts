@@ -1,18 +1,7 @@
 import { HttpContext } from '@adonisjs/core/http'
 import { Update } from 'grammy/types'
-import { Bot as GrammyBot, Context} from 'grammy' // Добавляем Context
 import BotModel from '#models/bot'
-
-// 1. Описываем свой контекст
-interface BotConfig {
-  botId: number
-  [key: string]: any // Для остальных полей из JSON
-}
-
-// Расширяем стандартный Context
-type BotContext = Context & {
-  config: BotConfig
-}
+import BotService from '../services/bot_service.js' // Импортируем наш новый сервис
 
 export default class TelegramWebhookController {
   
@@ -20,47 +9,30 @@ export default class TelegramWebhookController {
     const { request, response, params } = ctx
     const token = params.token
 
-    if (!token) {
-        return response.badRequest('Missing token')
+    // 1. Проверяем бота
+    const botConfig = await BotModel.findBy('token', token)
+    if (!botConfig || !botConfig.isActive) {
+      return response.status(200).send('Bot inactive')
     }
 
-    const botModel = await BotModel.query().where('token', token).first()
-    
-    if (!botModel || !botModel.isActive) {
-      return response.ok('Bot not found or inactive') 
-    }
-
-    const body = request.body() as Update
+    // 2. Получаем тело запроса
+    const body = request.body()
     if (!body || typeof body !== 'object') {
-        return response.ok('Invalid body') 
+        return response.status(400).send('Invalid body')
     }
 
     try {
-        // 2. Указываем свой тип контекста при создании бота
-        const bot = new GrammyBot<BotContext>(token)
+        // 3. ЗАПУСКАЕМ СЕРВИС
+        // Создаем экземпляр сервиса и передаем управление
+        const botService = new BotService(token, botConfig)
         
-        // Теперь TypeScript знает про ctx.config
-        bot.use(async (ctx, next) => {
-            ctx.config = { 
-              botId: botModel.id, 
-              ...botModel.config 
-            }
-            await next()
-        })
-
-        // Ваша логика (или вызов сервиса)
-        bot.command('start', (ctx) => {
-           // Здесь ctx.config тоже доступен и типизирован!
-           console.log(`Bot ID: ${ctx.config.botId}`)
-           return ctx.reply('Привет! Я работаю.')
-        })
-
-        await bot.handleUpdate(body) 
-
+        // Передаем update (приводим тип для TS)
+        await botService.init(body as Update)
+        
     } catch (err) {
-        console.error(`Error processing webhook for bot ${botModel.id}:`, err)
+        console.error(`Error in bot ${botConfig.name}:`, err)
     }
 
-    return response.ok('OK')
+    return response.status(200).send('OK')
   }
 }
