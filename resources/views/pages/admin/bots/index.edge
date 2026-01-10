@@ -31,22 +31,18 @@
               </form>
 
               {{-- Кнопка Удаления --}}
-        
-            <form 
-                action="{{ route('admin.bots.delete', { id: bot.id }) }}" 
-                method="POST"
-                onsubmit="return confirm('Вы уверены? Это действие необратимо.')"
-            >
-                {{ csrfField() }}
-                {{-- Передаем метод через скрытое поле, это надежнее --}}
-                <input type="hidden" name="_method" value="DELETE">
-                
-                <button type="submit" class="btn btn-xs btn-error btn-outline">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3m4 0h-4" />
-                    </svg>
-                </button>
-            </form>
+              <form 
+                  action="{{ route('admin.bots.delete', { id: bot.id }) }}?_method=DELETE" 
+                  method="POST"
+                  onsubmit="return confirm('Вы уверены, что хотите полностью удалить этого бота?')"
+              >
+                  {{ csrfField() }}
+                  <button type="submit" class="btn btn-xs btn-error btn-outline">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3m4 0h-4" />
+                      </svg>
+                  </button>
+              </form>
             <a href="{{ route('admin.bots.edit', { id: bot.id }) }}" class="btn btn-sm btn-accent">Настроить</a>
 
           </div>
