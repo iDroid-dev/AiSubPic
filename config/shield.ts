@@ -17,13 +17,29 @@ const shieldConfig = defineConfig({
    */
   csrf: {
     enabled: true,
-    exceptRoutes: [
+    exceptRoutes: (ctx) => {
+      
+
+    const path = ctx.request.url(true) 
+     const excludedUrls = [
     '/webhooks/*', // <-- Добавьте эту строку!
     '/api/*'
-    ],
+    ]
+
+    if(path.startsWith('/webhooks/')){
+        return true
+      }
+ 
+      if (excludedUrls.includes(path)) {
+        return true
+      }
+      return false
+    },
     enableXsrfCookie: false,
     methods: ['POST', 'PUT', 'PATCH', 'DELETE'],
-  },
+  
+
+},
 
   /**
    * Control how your website should be embedded inside
