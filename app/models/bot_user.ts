@@ -14,16 +14,19 @@ export default class BotUser extends BaseModel {
   @column()
   declare userId: number
 
-  
   @column()
   declare credits: number
 
-  @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime
-
+  // 👇 ОБЯЗАТЕЛЬНО ДОЛЖНО БЫТЬ ЭТО:
   @belongsTo(() => Bot)
   declare bot: BelongsTo<typeof Bot>
 
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
+
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
 }

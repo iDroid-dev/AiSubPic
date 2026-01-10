@@ -28,8 +28,8 @@ router.group(() => {
 
   // === ПОЛЬЗОВАТЕЛИ ===
   router.get('/users', [UsersController, 'index']).as('admin.users') // Список
+  router.get('/users/:id/edit', [UsersController, 'edit']).as('admin.users.edit')
   router.post('/users/:id/credits', [UsersController, 'addCredits']).as('admin.users.credits')
-
 
   // === БОТЫ ===
   router.get('/bots', [BotsController, 'index']).as('admin.bots.index')

@@ -23,49 +23,52 @@ export default class UsersController {
     return view.render('pages/admin/users/index', { users })
   }
 
-  // Метод для ручного начисления кредитов
+public async edit({ view, params }: HttpContext) {
+    const user = await User.findOrFail(params.id)
+
+    // Загружаем кошельки пользователя (botUsers) и информацию о самих ботах
+    await user.load('botUsers', (query) => {
+        query.preload('bot')
+        query.orderBy('credits', 'desc')
+    })
+
+    return view.render('pages/admin/users/edit', { user })
+  }
+
+  // НАЧИСЛЕНИЕ КРЕДИТОВ (Обновленный)
   public async addCredits({ request, response, params, session }: HttpContext) {
     const user = await User.findOrFail(params.id)
-    const amount = Number(request.input('amount'))
     
-    // Пытаемся получить ID бота из формы (если он там есть)
+    // Теперь мы жестко требуем bot_id и amount из формы
     const botId = request.input('bot_id')
+    const amount = Number(request.input('amount'))
 
-    if (isNaN(amount)) {
-        session.flash('error', 'Введите корректное число')
+    if (!botId || isNaN(amount) || amount === 0) {
+        session.flash('error', 'Ошибка данных. Выберите бота и введите сумму.')
         return response.redirect().back()
     }
 
-    let botUser: BotUser | null = null
-
-    if (botId) {
-        // Если указан конкретный бот — ищем кошелек в нем
-        botUser = await BotUser.query()
-            .where('user_id', user.id)
-            .where('bot_id', botId)
-            .first()
-    } else {
-        // Если бот не указан — берем ПЕРВЫЙ попавшийся активный кошелек (fallback)
-        // Или последний, который обновлялся
-        botUser = await BotUser.query()
-            .where('user_id', user.id)
-            .orderBy('updated_at', 'desc')
-            .first()
-    }
+    // Ищем конкретную связку Юзер-Бот
+    const botUser = await BotUser.query()
+        .where('user_id', user.id)
+        .where('bot_id', botId)
+        .first()
 
     if (!botUser) {
-        session.flash('error', 'У пользователя нет активных ботов для начисления. Сначала он должен запустить бота.')
+        session.flash('error', 'Кошелек не найден. Возможно, пользователь заблокировал бота.')
         return response.redirect().back()
     }
 
-    // Начисляем
+    // Обновляем баланс
     botUser.credits += amount
     await botUser.save()
-    
-    // Подгружаем бота, чтобы вывести его имя в сообщении
+
+    // Подгружаем имя для красивого уведомления
     await botUser.load('bot')
 
-    session.flash('success', `Баланс в боте "${botUser.bot.name}" обновлен! Текущий: ${botUser.credits}`)
+    const action = amount > 0 ? 'Начислено' : 'Списано'
+    session.flash('success', `${action} ${Math.abs(amount)} шт. для бота "${botUser.bot.name}". Новый баланс: ${botUser.credits}`)
+    
     return response.redirect().back()
   }
 }

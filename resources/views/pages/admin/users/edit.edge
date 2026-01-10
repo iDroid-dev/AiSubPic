@@ -1,0 +1,98 @@
+@layout.app({ title: "Редактирование пользователя" })
+@slot('main')
+
+  {{-- Хлебные крошки и заголовок --}}
+  <div class="flex items-center gap-4 mb-6">
+    <a href="{{ route('admin.users.index') }}" class="btn btn-outline btn-sm">← Назад</a>
+    <h1 class="text-2xl font-bold">Пользователь: {{ user.fullName || user.username }}</h1>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    
+    {{-- Карточка инфо о юзере --}}
+    <div class="card bg-base-100 shadow-xl border border-base-200 h-fit">
+      <div class="card-body">
+        <h2 class="card-title text-lg">Инфо</h2>
+        <div class="py-2">
+            <div class="text-xs opacity-50">Telegram ID</div>
+            <div class="font-mono text-lg">{{ user.telegramId }}</div>
+        </div>
+        <div class="py-2">
+            <div class="text-xs opacity-50">Username</div>
+            <div class="font-bold">
+                @if(user.username)
+                    <a href="https://t.me/{{ user.username }}" target="_blank" class="link link-primary">@ {{ user.username }}</a>
+                @else
+                    Нет
+                @endif
+            </div>
+        </div>
+        <div class="py-2">
+            <div class="text-xs opacity-50">Регистрация</div>
+            <div>{{ user.createdAt.toFormat('dd.MM.yyyy HH:mm') }}</div>
+        </div>
+      </div>
+    </div>
+
+    {{-- Список ботов и балансы --}}
+    <div class="col-span-2 card bg-base-100 shadow-xl border border-base-200">
+      <div class="card-body">
+        <h2 class="card-title mb-4">Баланс в ботах</h2>
+        
+        @if(user.botUsers.length === 0)
+            <div class="alert">
+                <span>Пользователь еще не запускал ни одного бота.</span>
+            </div>
+        @else
+            <div class="overflow-x-auto">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Бот</th>
+                            <th>Текущий баланс</th>
+                            <th>Управление</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @each(wallet in user.botUsers)
+                            <tr>
+                                {{-- Имя бота --}}
+                                <td>
+                                    <div class="font-bold">{{ wallet.bot.name }}</div>
+                                    <div class="text-xs opacity-50">@ {{ wallet.bot.username }}</div>
+                                </td>
+
+                                {{-- Баланс --}}
+                                <td>
+                                    <div class="badge badge-lg badge-neutral font-mono">
+                                        {{ wallet.credits }} шт.
+                                    </div>
+                                </td>
+
+                                {{-- Форма добавления --}}
+                                <td>
+                                    <form action="{{ route('admin.users.credits', { id: user.id }) }}" method="POST" class="flex gap-2 items-center">
+                                        {{ csrfField() }}
+                                        {{-- Скрыто передаем ID бота --}}
+                                        <input type="hidden" name="bot_id" value="{{ wallet.botId }}">
+                                        
+                                        <input type="number" name="amount" placeholder="+/-" class="input input-bordered input-sm w-24" required>
+                                        
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            Применить
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+      </div>
+    </div>
+
+  </div>
+
+@endslot
+@end
