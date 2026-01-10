@@ -1,36 +1,31 @@
+// app/controllers/telegram_webhooks_controller.ts
 import { HttpContext } from '@adonisjs/core/http'
 import { Update } from 'grammy/types'
 import BotModel from '#models/bot'
-import BotService from '../services/bot_service.js' // Импортируем наш новый сервис
+import BotService from '#services/bot_service'
 
-export default class TelegramWebhookController {
-  
-  public async handle(ctx: HttpContext) {
-    const { request, response, params } = ctx
+export default class TelegramWebhooksController {
+  public async handle({ request, response, params }: HttpContext) {
     const token = params.token
 
-    // 1. Проверяем бота
-    const botConfig = await BotModel.findBy('token', token)
-    if (!botConfig || !botConfig.isActive) {
-      return response.status(200).send('Bot inactive')
+    // 1. Ищем конфиг бота
+    const botConfig = await BotModel.query()
+      .where('token', token)
+      .where('isActive', true)
+      .first()
+
+    if (!botConfig) {
+      return response.status(200).send('Bot not found or inactive')
     }
 
-    // 2. Получаем тело запроса
-    const body = request.body()
-    if (!body || typeof body !== 'object') {
-        return response.status(400).send('Invalid body')
-    }
+    const body = request.body() as Update
 
     try {
-        // 3. ЗАПУСКАЕМ СЕРВИС
-        // Создаем экземпляр сервиса и передаем управление
-        const botService = new BotService(token, botConfig)
-        
-        // Передаем update (приводим тип для TS)
-        await botService.init(body as Update)
-        
+      // 2. Делегируем всё сервису
+      const botService = new BotService(token, botConfig)
+      await botService.init(body)
     } catch (err) {
-        console.error(`Error in bot ${botConfig.name}:`, err)
+      console.error(`[Webhook Error] Bot: ${botConfig.name}:`, err)
     }
 
     return response.status(200).send('OK')
