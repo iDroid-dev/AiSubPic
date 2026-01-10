@@ -4,8 +4,11 @@ import Bot from '#models/bot' // 👈 Импортируем
 
 export default class PlansController {
   
-  public async index({ view }: HttpContext) {
-    const plans = await Plan.query().orderBy('sort_order', 'asc')
+public async index({ view }: HttpContext) {
+    const plans = await Plan.query()
+      .preload('bot') // 👈 ЗАГРУЖАЕМ СВЯЗЬ С БОТОМ
+      .orderBy('sort_order', 'asc')
+      
     return view.render('pages/admin/plans/index', { plans })
   }
 
