@@ -10,7 +10,7 @@ export default class extends BaseSchema {
       // Связь: Какой Бот <-> Какой Юзер
       table.integer('bot_id').unsigned().references('bots.id').onDelete('CASCADE')
       table.integer('user_id').unsigned().references('users.id').onDelete('CASCADE')
-      
+      table.integer('credits').defaultTo(0)
       // Важно: Уникальная пара. Один юзер не может быть добавлен в одного бота дважды.
       table.unique(['bot_id', 'user_id'])
 
