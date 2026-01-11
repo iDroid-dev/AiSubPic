@@ -36,5 +36,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   DB_PASSWORD: Env.schema.string.optional(),
   DB_DATABASE: Env.schema.string(),
   TELEGRAM_BOT_TOKEN: Env.schema.string(),
-  REPLICATE_API_TOKEN: Env.schema.string()
+  REPLICATE_API_TOKEN: Env.schema.string(),
+  APP_URL: Env.schema.string()
 })
