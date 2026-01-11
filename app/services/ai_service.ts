@@ -48,7 +48,7 @@ export class AiService {
             
             // Размер: "1" = 1024x1024. 
             // Если нужно СУПЕР ДЕШЕВО, поставьте "0.25" (512x512)
-            megapixels: "0.5", 
+            megapixels: "1", 
             
             aspect_ratio: "1:1",
             num_outputs: 1,
