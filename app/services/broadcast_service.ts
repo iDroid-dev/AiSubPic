@@ -3,6 +3,9 @@ import Broadcast from '#models/broadcast'
 import BotUser from '#models/bot_user'
 import BotModel from '#models/bot'
 import User from '#models/user'
+import PersonalMessage from '#models/personal_message'  
+
+
 
 class BroadcastService {
   
@@ -82,13 +85,22 @@ class BroadcastService {
   /**
    * Отправка одного сообщения (для админки юзера)
    */
-  public async sendPersonalMessage(botId: number, userId: number, text: string) {
+public async sendPersonalMessage(botId: number, userId: number, text: string) {
       const botConfig = await BotModel.findOrFail(botId)
       const user = await User.findOrFail(userId)
       
       const bot = new Bot(botConfig.token)
       
+      // 1. Отправляем в Telegram
       await bot.api.sendMessage(user.telegramId!, text, { parse_mode: 'HTML' })
+
+      // 2. Сохраняем в историю
+      await PersonalMessage.create({
+          botId: botConfig.id,
+          userId: user.id,
+          text: text,
+          isIncoming: false // Это исходящее от админа
+      })
   }
 }
 

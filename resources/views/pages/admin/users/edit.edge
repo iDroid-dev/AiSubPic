@@ -130,6 +130,50 @@
       </div>
     </div>
 
+    {{-- История сообщений --}}
+    <div class="col-span-1 lg:col-span-3 card bg-base-100 shadow-xl border border-base-200 mt-6">
+      <div class="card-body">
+        <h2 class="card-title mb-4">История сообщений</h2>
+
+        @if(user.messages.length === 0)
+            <div class="text-sm opacity-50 italic">История переписки пуста.</div>
+        @else
+            <div class="overflow-x-auto max-h-96">
+                <table class="table table-xs table-pin-rows">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Бот</th>
+                            <th>Сообщение</th>
+                            <th>Тип</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @each(msg in user.messages)
+                            <tr>
+                                <td class="whitespace-nowrap opacity-70">
+                                    {{ msg.createdAt.toFormat('dd.MM.yyyy HH:mm') }}
+                                </td>
+                                <td>
+                                    <div class="badge badge-ghost">{{ msg.bot.name }}</div>
+                                </td>
+                                <td class="whitespace-pre-wrap">{{ msg.text }}</td>
+                                <td>
+                                    @if(msg.isIncoming)
+                                        <span class="text-info">⬅️ От юзера</span>
+                                    @else
+                                        <span class="text-success">➡️ Вы отправили</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+      </div>
+    </div>
+
   </div>
 
 @endslot

@@ -6,7 +6,7 @@ import Generation from '#models/generation'
 import hash from '@adonisjs/core/services/hash'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { compose } from '@adonisjs/core/helpers'
-
+import PersonalMessage from '#models/personal_message'
 import BotUser from '#models/bot_user'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
@@ -46,6 +46,9 @@ export default class User extends compose(BaseModel, AuthFinder){
 
   @hasMany(() => BotUser)
   declare botUsers: HasMany<typeof BotUser>
+
+  @hasMany(() => PersonalMessage)
+  declare messages: HasMany<typeof PersonalMessage>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

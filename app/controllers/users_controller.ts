@@ -26,10 +26,16 @@ export default class UsersController {
 public async edit({ view, params }: HttpContext) {
     const user = await User.findOrFail(params.id)
 
-    // Загружаем кошельки пользователя (botUsers) и информацию о самих ботах
+    // 1. Загружаем кошельки (как было)
     await user.load('botUsers', (query) => {
         query.preload('bot')
         query.orderBy('credits', 'desc')
+    })
+
+    // 2. Загружаем историю сообщений (НОВОЕ)
+    await user.load('messages', (query) => {
+        query.preload('bot')
+        query.orderBy('created_at', 'desc')
     })
 
     return view.render('pages/admin/users/edit', { user })
