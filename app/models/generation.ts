@@ -1,9 +1,9 @@
+// app/models/generation.ts
 import { DateTime } from 'luxon'
 import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import User from '#models/user'
 import Bot from '#models/bot'
-
 
 export default class Generation extends BaseModel {
   @column({ isPrimary: true })
@@ -19,16 +19,7 @@ export default class Generation extends BaseModel {
   declare prompt: string
 
   @column()
-  declare aspectRatio: string
-
-  @column()
   declare resultUrl: string | null
-
-  @column()
-  declare replicateId: string | null
-
-  @column()
-  declare costUsd: number | null
 
   @column()
   declare isSuccessful: boolean
@@ -39,7 +30,6 @@ export default class Generation extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
-  // Связь: Генерация принадлежит Пользователю
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
 
