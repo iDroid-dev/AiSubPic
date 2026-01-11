@@ -46,7 +46,7 @@
         <span class="label-text">Выберите модель для генерации</span>
       </label>
       <select name="ai_model_id" class="select select-bordered w-full">
-        <option value="" {{ !bot.aiModelId ? 'selected' : '' }}>-- По умолчанию (Вшитая в код) --</option>
+        <option value="" {{ !bot.aiModelId ? 'selected' : '' }}>-- По умолчанию (Пусто) --</option>
         @each(model in aiModels)
           <option value="{{ model.id }}" {{ bot.aiModelId == model.id ? 'selected' : '' }}>
             {{ model.name }} ({{ model.slug }})
@@ -54,7 +54,7 @@
         @endeach
       </select>
       <div class="label">
-        <span class="label-text-alt">Если не выбрано, будет использована модель по умолчанию из кода.</span>
+        <span class="label-text-alt">Если не выбрано, модель не будет использована. Модель выбирай обязательно</span>
       </div>
     </div>
   </div>
