@@ -173,6 +173,24 @@ export default class BotService {
 
       } catch (e) {
         console.error('[Bot] Gen Error:', e)
+
+ 
+          let errorMessage = '❌ <b>Ошибка генерации.</b>\nПопробуйте позже.'
+          const errorString = String(e)
+
+          if (errorString.includes('NSFW') || errorString.includes('sensitive') || errorString.includes('safety')) {
+              errorMessage = '🔞 <b>Запрос отклонен фильтром безопасности (NSFW).</b>\n\nПожалуйста, измените запрос. Нейросеть посчитала его недопустимым.'
+          }
+
+          // 2. Отправляем пользователю понятный ответ
+          try {
+              await ctx.api.editMessageText(ctx.chat.id, msg.message_id, errorMessage, { 
+                  parse_mode: 'HTML' 
+              })
+          } catch (editError) {
+              // Если сообщение удалить/изменить нельзя, шлем новое
+              await ctx.reply(errorMessage, { parse_mode: 'HTML' })
+          }
         await ctx.api.editMessageText(ctx.chat.id, msg.message_id, '❌ Ошибка генерации.')
       }
     })
