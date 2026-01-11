@@ -21,6 +21,9 @@ services:
       - static_content:/app/public
     command: >
       sh -c "cp -ru /app/public_source/* /app/public/ && node bin/server.js"
+    environment:
+      - REPLICATE_API_TOKEN=${REPLICATE_API_TOKEN}
+ 
 
   # База данных (из вашего старого файла, чуть доработанная)
   db:

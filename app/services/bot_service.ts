@@ -97,68 +97,91 @@ export default class BotService {
   }
 
   // === ГЕНЕРАЦИЯ ===
+// === ГЕНЕРАЦИЯ ===
   private registerMessageHandlers() {
     this.bot.on('message:text', async (ctx) => {
+      // 0. Отсекаем команды и системные сообщения
       if (!ctx.from || ctx.message.text.startsWith('/')) return
 
-      // Если мы НЕ ждем промпт — игнорируем
-      if (!ctx.session.isAwaitingPrompt) return
+      // ЛОГ ДЛЯ ОТЛАДКИ: Видим, что сообщение вообще пришло
+      console.log(`[Bot] Message from ${ctx.from.id}: "${ctx.message.text}". State: ${ctx.session.isAwaitingPrompt}`)
 
-      const AiService = (await import('#services/ai_service')).default
-
-      const globalUser = await User.findBy('telegramId', ctx.from.id)
-      if (!globalUser) return
-
-      const botUser = await BotUser.query()
-        .where('bot_id', this.config.id)
-        .where('user_id', globalUser.id)
-        .first()
-
-      if (!botUser || botUser.credits <= 0) {
-        ctx.session.isAwaitingPrompt = false
-        return ctx.reply('😔 У вас закончились генерации.', {
-          reply_markup: new InlineKeyboard().text('💎 Купить', 'buy_subscription'),
+      // 1. ПРОВЕРКА СОСТОЯНИЯ
+      // Если юзер пишет текст, но не нажал кнопку — подсказываем ему
+      if (!ctx.session.isAwaitingPrompt) {
+        return ctx.reply('👇 Чтобы сгенерировать картинку, сначала нажмите кнопку <b>"🎨 Начать рисовать"</b> в меню.', {
+            parse_mode: 'HTML'
         })
       }
 
-      const msg = await ctx.reply('🎨 <b>Генерирую...</b>', { parse_mode: 'HTML' })
-
+      // 2. Логика генерации
       try {
-        const images = await AiService.generateImage(ctx.message.text)
-        const resultUrl = Array.isArray(images) ? String(images[0]) : String(images)
+          // Динамический импорт
+          const AiService = (await import('#services/ai_service')).default
+          console.log('[Bot] AI Service imported')
 
-        botUser.credits -= 1
-        await botUser.save()
+          const globalUser = await User.findBy('telegramId', ctx.from.id)
+          if (!globalUser) {
+              console.error('[Bot] User not found in DB')
+              return
+          }
 
-        await Generation.create({
-          userId: globalUser.id,
-          botId: this.config.id,
-          prompt: ctx.message.text,
-          resultUrl: resultUrl,
-          isSuccessful: true,
-        })
+          const botUser = await BotUser.query()
+            .where('bot_id', this.config.id)
+            .where('user_id', globalUser.id)
+            .first()
 
-        await ctx.replyWithPhoto(resultUrl, {
-          caption: `✅ Готово! Осталось: ${botUser.credits}`,
-          reply_markup: this.getDynamicKeyboard()
-        })
-        
-        await ctx.api.deleteMessage(ctx.chat.id, msg.message_id)
-        
-        // Сбрасываем ожидание
-        ctx.session.isAwaitingPrompt = false
+          if (!botUser || botUser.credits <= 0) {
+            ctx.session.isAwaitingPrompt = false
+            return ctx.reply('😔 У вас закончились генерации.', {
+              reply_markup: new InlineKeyboard().text('💎 Купить', 'buy_subscription'),
+            })
+          }
 
-      } catch (e) {
-        console.error('Gen Error:', e)
-        // В случае ошибки пишем в базу, но стейт не сбрасываем (даем повторить)
-        await Generation.create({
+          const msg = await ctx.reply('🎨 <b>Отправляю запрос нейросети...</b>', { parse_mode: 'HTML' })
+
+          // Вызов Replicate
+          console.log('[Bot] Calling Replicate...')
+          const images = await AiService.generateImage(ctx.message.text)
+          console.log('[Bot] Replicate result:', images)
+
+          const resultUrl = Array.isArray(images) ? String(images[0]) : String(images)
+
+          botUser.credits -= 1
+          await botUser.save()
+
+          await Generation.create({
             userId: globalUser.id,
             botId: this.config.id,
             prompt: ctx.message.text,
-            isSuccessful: false,
+            resultUrl: resultUrl,
+            isSuccessful: true,
           })
 
-        await ctx.api.editMessageText(ctx.chat.id, msg.message_id, '❌ Ошибка. Попробуйте другой запрос.')
+          await ctx.replyWithPhoto(resultUrl, {
+            caption: `✅ Готово! Осталось: ${botUser.credits}`,
+            reply_markup: this.getDynamicKeyboard()
+          })
+          
+          await ctx.api.deleteMessage(ctx.chat.id, msg.message_id)
+          ctx.session.isAwaitingPrompt = false // Сбрасываем ожидание
+
+      } catch (e) {
+        console.error('[Bot] Generation Error:', e) // ВОТ ЗДЕСЬ БУДЕТ ОШИБКА В КОНСОЛИ
+        
+        // Получаем ID пользователя, если удалось
+        const uId = await User.findBy('telegramId', ctx.from.id)
+        
+        if (uId) {
+            await Generation.create({
+                userId: uId.id,
+                botId: this.config.id,
+                prompt: ctx.message.text,
+                isSuccessful: false,
+            })
+        }
+
+        await ctx.reply('❌ Ошибка генерации. Попробуйте позже.')
       }
     })
   }
