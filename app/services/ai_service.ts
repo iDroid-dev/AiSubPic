@@ -17,7 +17,7 @@ export class AiService {
   async generateImage(prompt: string) {
     try {
       const output = await this.replicate.run(
-        "openai/gpt-image-1.5",
+        "black-forest-labs/flux-dev",
         {
           input: {
             prompt: prompt,
