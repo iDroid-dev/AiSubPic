@@ -65,25 +65,21 @@
 
         {{-- ССЫЛКИ МЕНЮ --}}
         
-        {{-- Дашборд --}}
         <li>
             <a href="{{ route('admin.dashboard') }}" class="{{ request.matchesRoute('admin.dashboard') ? 'active' : '' }}">
                  📊 Дашборд
             </a>
         </li>
 
-        {{-- Боты --}}
         <li>
-            <a href="{{ route('admin.bots.index') }}" class="{{ request.matchesRoute('admin.bots.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.bots.index') }}" class="{{ request.url().startsWith('/admin/bots') ? 'active' : '' }}">
                  🤖 Мои Боты
             </a>
         </li>
 
-        {{-- Тарифы --}}
         <li>
-            <a href="{{ route('admin.plans.index') }}" class="{{ request.matchesRoute('admin.plans.*') ? 'active' : '' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                Тарифы и Цены
+            <a href="{{ route('admin.plans.index') }}" class="{{ request.url().startsWith('/admin/plans') ? 'active' : '' }}">
+                💎 Тарифы и Цены
             </a>
         </li>
 
@@ -93,14 +89,20 @@
           </a>
         </li>
 
-        {{-- Пользователи --}}
+        {{-- ПЛАТЕЖИ --}}
         <li>
-            <a href="{{ route('admin.users.index') }}" class="{{ request.matchesRoute('admin.users') ? 'active' : '' }}">
+          <a href="{{ route('admin.payments.index') }}" class="{{ request.url().startsWith('/admin/payments') ? 'active' : '' }}">
+            💰 Платежи
+          </a>
+        </li>
+
+        <li>
+            <a href="{{ route('admin.users.index') }}" class="{{ request.url().startsWith('/admin/users') ? 'active' : '' }}">
                  👥 Пользователи
             </a>
         </li>
 
-          <li>
+        <li>
           <a href="{{ route('admin.mailing.index') }}" class="{{ request.url().startsWith('/admin/mailing') ? 'active' : '' }}">
             📢 Рассылка
           </a>

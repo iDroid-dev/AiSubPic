@@ -18,6 +18,9 @@ const BotsController = () => import('#controllers/bots_controller')
 const UsersController = () => import('#controllers/users_controller')
 const AiModelsController = () => import('#controllers/ai_models_controller')
 const MailingController = () => import('#controllers/mailing_controller')
+const PaymentsController = () => import('#controllers/payment_controller')
+
+
 
 router.on('/').render('pages/home')
 router.get('/login', [SessionController, 'showLogin']).as('login.show')
@@ -58,7 +61,9 @@ router.group(() => {
   router.post('/models/:id', [AiModelsController, 'update']).as('admin.models.update')
   router.delete('/models/:id', [AiModelsController, 'delete']).as('admin.models.delete')
 
-
+// === ПЛАТЕЖИ ===
+  router.get('/payments', [PaymentsController, 'index']).as('admin.payments.index')
+  router.post('/payments/:id/approve', [PaymentsController, 'approve']).as('admin.payments.approve')
   // === РАССЫЛКИ ===
   router.get('/mailing', [MailingController, 'index']).as('admin.mailing.index')
   router.get('/mailing/create', [MailingController, 'create']).as('admin.mailing.create')

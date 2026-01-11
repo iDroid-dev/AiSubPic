@@ -1,0 +1,113 @@
+@layout.app({ title: "Платежи" })
+
+@slot('main')
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold">История платежей</h1>
+    <p class="text-sm opacity-70">Все транзакции (заказы) из всех ботов</p>
+  </div>
+
+  <div class="card bg-base-100 shadow-xl border border-base-200">
+    <div class="overflow-x-auto">
+      <table class="table table-zebra">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Пользователь</th>
+            <th>Бот</th>
+            <th>Тариф / Сумма</th>
+            <th>Провайдер</th>
+            <th>Статус</th>
+            <th>Дата</th>
+            <th class="text-right">Действие</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(order in orders)
+            <tr>
+              <td class="font-mono text-xs text-opacity-50">#{{ order.id }}</td>
+              
+              <td>
+                <div class="flex flex-col">
+                  <span class="font-bold">
+                    {{ order.user?.fullName || order.user?.username || 'ID: ' + order.userId }}
+                  </span>
+                  <span class="text-xs opacity-50">{{ order.user?.telegramId || '—' }}</span>
+                </div>
+              </td>
+
+              <td>
+                <div class="badge badge-outline badge-sm whitespace-nowrap">
+                  {{ order.bot?.name || 'Удален' }}
+                </div>
+              </td>
+
+              <td>
+                <div class="flex flex-col">
+                  <span class="font-bold">{{ order.plan?.name || 'Пакет' }}</span>
+                  <span class="text-success text-xs font-semibold">
+                    {{ order.amount }} {{ order.currency }}
+                  </span>
+                </div>
+              </td>
+
+              <td>
+                <span class="uppercase text-xs font-bold tracking-wider">
+                  {{ order.paymentProvider }}
+                </span>
+              </td>
+
+              <td>
+                @if(order.status === 'paid')
+                  <div class="badge badge-success text-white gap-2">
+                    ✅ Оплачен
+                  </div>
+                @elseif(order.status === 'canceled')
+                  <div class="badge badge-error text-white">❌ Отменен</div>
+                @else
+                  <div class="badge badge-warning text-white animate-pulse">⏳ Ожидание</div>
+                @endif
+              </td>
+
+              <td class="text-xs whitespace-nowrap">
+                {{ order.createdAt.toFormat('dd.MM.yyyy HH:mm') }}
+              </td>
+
+              <td class="text-right">
+                @if(order.status === 'pending')
+                  <form 
+                    action="{{ route('admin.payments.approve', { id: order.id }) }}" 
+                    method="POST" 
+                    onsubmit="return confirm('Вы уверены, что хотите подтвердить оплату ВРУЧНУЮ? Юзеру будут начислены кредиты по тарифу.')"
+                  >
+                    {{ csrfField() }}
+                    <button type="submit" class="btn btn-xs btn-primary btn-outline">
+                      Подтвердить
+                    </button>
+                  </form>
+                @endif
+
+                {{-- Если нужно посмотреть сырой ответ от платежки --}}
+                @if(order.providerResponse)
+                   <button 
+                     class="btn btn-xs btn-ghost btn-square" 
+                     onclick="alert(JSON.stringify({{ order.providerResponse }}, null, 2))"
+                     title="Посмотреть лог"
+                   >
+                     📋
+                   </button>
+                @endif
+              </td>
+            </tr>
+          @else
+            <tr>
+              <td colspan="8" class="text-center py-10 opacity-50 font-italic">
+                Список заказов пуст
+              </td>
+            </tr>
+          @endeach
+        </tbody>
+      </table>
+    </div>
+  </div>
+@endslot
+@end

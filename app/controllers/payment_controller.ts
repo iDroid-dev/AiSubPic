@@ -4,9 +4,49 @@ import User from '#models/user' // Исправили импорт
 import Bot from '#models/bot'
 import BotUser from '#models/bot_user'
 import { Bot as GrammyBot } from 'grammy'
+import Plan from '#models/plan'
 // import { DateTime } from 'luxon' // Если нужно продлевать дату, раскомментируй
 
 export default class BotPaymentWebhookController {
+
+    public async index({ view }: HttpContext) {
+    const orders = await Order.query()
+      .preload('user')
+      .preload('bot')
+      .preload('plan')
+      .orderBy('created_at', 'desc')
+
+    return view.render('pages/admin/payments/index', { orders })
+  }
+
+  public async approve({ params, response, session }: HttpContext) {
+    const order = await Order.findOrFail(params.id)
+
+    // Твой статус в модели: 'paid' (оплачено)
+    if (order.status === 'paid') {
+      session.flash('error', 'Заказ уже оплачен')
+      return response.redirect().back()
+    }
+
+    const plan = await Plan.findOrFail(order.planId)
+    const botUser = await BotUser.query()
+      .where('bot_id', order.botId)
+      .where('user_id', order.userId)
+      .first()
+
+    if (botUser) {
+      botUser.credits += plan.credits
+      await botUser.save()
+
+      order.status = 'paid'
+      order.providerResponse = { manual_approve_by: 'admin', date: new Date().toISOString() }
+      await order.save()
+
+      session.flash('success', `Заказ #${order.id} подтвержден. Начислено ${plan.credits} кр.`)
+    }
+
+    return response.redirect().back()
+  }
 
   /**
    * 🟢 LAVA RU WEBHOOK
