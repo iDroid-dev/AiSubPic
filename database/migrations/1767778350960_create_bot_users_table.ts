@@ -8,14 +8,18 @@ export default class extends BaseSchema {
       table.increments('id')
       
       // Связь: Какой Бот <-> Какой Юзер
-      table.integer('bot_id').unsigned().references('bots.id').onDelete('CASCADE')
-      table.integer('user_id').unsigned().references('users.id').onDelete('CASCADE')
-      table.integer('credits').defaultTo(0)
-      // Важно: Уникальная пара. Один юзер не может быть добавлен в одного бота дважды.
+      table.integer('bot_id').unsigned().references('id').inTable('bots').onDelete('CASCADE')
+      table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE')
+      
+      // Кредиты сразу здесь
+      table.integer('credits').defaultTo(0).notNullable()
+      
+      // Уникальная пара
       table.unique(['bot_id', 'user_id'])
 
-      table.timestamp('created_at') 
-      table.dropColumn('updated_at')
+      // Таймстампы (исправлено)
+      table.timestamp('created_at', { useTz: true })
+      table.timestamp('updated_at', { useTz: true })
     })
   }
 
