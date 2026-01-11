@@ -1,0 +1,37 @@
+@layout.app({ title: "Новая рассылка" })
+@slot('main')
+  <div class="max-w-2xl mx-auto">
+    <div class="flex items-center gap-4 mb-6">
+       <a href="{{ route('admin.mailing.index') }}" class="btn btn-sm btn-outline">← Назад</a>
+       <h1 class="text-2xl font-bold">Запуск рассылки</h1>
+    </div>
+
+    <form action="{{ route('admin.mailing.store') }}" method="POST" class="card bg-base-100 shadow-xl border border-base-200">
+      {{ csrfField() }}
+      <div class="card-body gap-4">
+        
+        <div class="form-control">
+          <label class="label"><span class="label-text font-bold">Выберите бота</span></label>
+          <select name="bot_id" class="select select-bordered" required>
+             @each(bot in bots)
+               <option value="{{ bot.id }}">{{ bot.name }} (@ {{ bot.username }})</option>
+             @endeach
+          </select>
+        </div>
+
+        <div class="form-control">
+          <label class="label"><span class="label-text font-bold">Текст сообщения (HTML поддерживается)</span></label>
+          <textarea name="message" class="textarea textarea-bordered h-32" placeholder="Привет! У нас скидки..." required></textarea>
+        </div>
+
+        <div class="form-control">
+          <label class="label"><span class="label-text">Ссылка на картинку (опционально)</span></label>
+          <input type="url" name="image_url" placeholder="https://..." class="input input-bordered" />
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-4">🚀 Запустить рассылку</button>
+      </div>
+    </form>
+  </div>
+@endslot
+@end

@@ -1,0 +1,51 @@
+@layout.app({ title: "Рассылки" })
+@slot('main')
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Рассылки</h1>
+    <a href="{{ route('admin.mailing.create') }}" class="btn btn-primary">📣 Новая рассылка</a>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="table bg-base-100 shadow">
+      <thead>
+        <tr>
+          <th>Бот</th>
+          <th>Сообщение</th>
+          <th>Прогресс</th>
+          <th>Статус</th>
+          <th>Дата</th>
+        </tr>
+      </thead>
+      <tbody>
+        @each(b in broadcasts)
+          <tr>
+            <td>{{ b.bot.name }}</td>
+            <td class="max-w-xs truncate">{{ b.message }}</td>
+            <td>
+               <div class="flex flex-col text-xs">
+                   <span class="text-success">✅ {{ b.successCount }}</span>
+                   <span class="text-error">❌ {{ b.failCount }}</span>
+                   <span class="opacity-50">Всего: {{ b.totalUsers }}</span>
+               </div>
+            </td>
+            <td>
+                @if(b.status === 'completed')
+                    <div class="badge badge-success">Готово</div>
+                @elseif(b.status === 'processing')
+                    <div class="badge badge-warning animate-pulse">В процессе...</div>
+                @elseif(b.status === 'failed')
+                    <div class="badge badge-error">Ошибка</div>
+                @else
+                    <div class="badge badge-ghost">Очередь</div>
+                @endif
+            </td>
+            <td class="text-xs">{{ b.createdAt.toFormat('dd.MM HH:mm') }}</td>
+          </tr>
+        @else
+          <tr><td colspan="5" class="text-center p-4">Нет рассылок</td></tr>
+        @endeach
+      </tbody>
+    </table>
+  </div>
+@endslot
+@end

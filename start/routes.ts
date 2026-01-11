@@ -17,7 +17,7 @@ const PlansController = () => import('#controllers/plans_controller')
 const BotsController = () => import('#controllers/bots_controller')
 const UsersController = () => import('#controllers/users_controller')
 const AiModelsController = () => import('#controllers/ai_models_controller')
-
+const MailingController = () => import('#controllers/mailing_controller')
 
 router.on('/').render('pages/home')
 router.get('/login', [SessionController, 'showLogin']).as('login.show')
@@ -57,6 +57,15 @@ router.group(() => {
   router.get('/models/:id', [AiModelsController, 'edit']).as('admin.models.edit')
   router.post('/models/:id', [AiModelsController, 'update']).as('admin.models.update')
   router.delete('/models/:id', [AiModelsController, 'delete']).as('admin.models.delete')
+
+
+  // === РАССЫЛКИ ===
+  router.get('/mailing', [MailingController, 'index']).as('admin.mailing.index')
+  router.get('/mailing/create', [MailingController, 'create']).as('admin.mailing.create')
+  router.post('/mailing', [MailingController, 'store']).as('admin.mailing.store')
+  
+  // Личное сообщение
+  router.post('/users/:id/message', [MailingController, 'sendPersonal']).as('admin.users.message')
 
 
 })

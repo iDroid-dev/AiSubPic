@@ -102,6 +102,12 @@
                 Пользователи
             </a>
         </li>
+
+          <li>
+          <a href="{{ route('admin.mailing.index') }}" class="{{ request.url().startsWith('/admin/mailing') ? 'active' : '' }}">
+            Рассылка
+          </a>
+        </li>
         
         <div class="divider"></div>
  
