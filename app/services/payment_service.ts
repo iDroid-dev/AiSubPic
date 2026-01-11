@@ -152,7 +152,7 @@ export default class PaymentService {
       // Посылаем пустую строку или заглушку, если email нет.
       const payload = {
           amount: Number(order.amount).toFixed(2),
-          currency: 'USD', // Heleket работает с USD
+          currency: 'RUB', // Heleket работает с USD
           order_id: String(order.id),
           payer_email: 'bot_user@uhuruvpn.com', // Заглушка, т.к. у TG юзера может не быть email
           url_success: `${env.get('APP_URL')}/cabinet`,
