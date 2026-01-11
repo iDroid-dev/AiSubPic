@@ -1,0 +1,82 @@
+@layout.app({ title: "AI Модели" })
+
+@slot('main')
+  <div class="flex justify-between items-center mb-6">
+    <div>
+        <h1 class="text-3xl font-bold">AI Модели</h1>
+        <p class="text-sm opacity-70">Список нейросетей, подключенных к Replicate</p>
+    </div>
+    <a href="{{ route('admin.models.create') }}" class="btn btn-primary">
+      + Добавить модель
+    </a>
+  </div>
+
+  <div class="card bg-base-100 shadow-xl border border-base-200">
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Название (в админке)</th>
+            <th>Slug (Replicate ID)</th>
+            <th>Статус</th>
+            <th class="text-right">Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(model in models)
+            <tr class="hover">
+              <th>{{ model.id }}</th>
+              
+              <td class="font-bold">
+                {{ model.name }}
+              </td>
+              
+              <td>
+                <div class="badge badge-neutral font-mono text-xs p-3">
+                  {{ model.slug }}
+                </div>
+              </td>
+              
+              <td>
+                @if(model.isActive)
+                  <div class="badge badge-success gap-1 text-white">
+                    Active
+                  </div>
+                @else
+                  <div class="badge badge-ghost gap-1">
+                    Disabled
+                  </div>
+                @endif
+              </td>
+              
+              <td class="flex justify-end gap-2">
+                <a href="{{ route('admin.models.edit', { id: model.id }) }}" class="btn btn-sm btn-square btn-ghost" title="Редактировать">
+                  ✏️
+                </a>
+
+                <form 
+                  action="{{ route('admin.models.delete', { id: model.id }) }}?_method=DELETE" 
+                  method="POST" 
+                  onsubmit="return confirm('Удалить эту модель? Боты, использующие её, перейдут на дефолтную.')"
+                >
+                  {{ csrfField() }}
+                  <button type="submit" class="btn btn-sm btn-square btn-ghost text-error" title="Удалить">
+                    🗑️
+                  </button>
+                </form>
+              </td>
+            </tr>
+          @else
+            <tr>
+              <td colspan="5" class="text-center py-10 opacity-50">
+                Список моделей пуст. Добавьте первую модель.
+              </td>
+            </tr>
+          @endeach
+        </tbody>
+      </table>
+    </div>
+  </div>
+@endslot
+@end

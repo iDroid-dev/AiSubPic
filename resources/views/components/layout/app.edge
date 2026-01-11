@@ -89,6 +89,12 @@
             </a>
         </li>
 
+        <li>
+          <a href="{{ route('admin.models.index') }}" class="{{ request.matches('admin.models.*') ? 'active' : '' }}">
+            🧠 AI Модели
+          </a>
+        </li>
+
         {{-- Пользователи --}}
         <li>
             <a href="{{ route('admin.users.index') }}" class="{{ request.matchesRoute('admin.users') ? 'active' : '' }}">

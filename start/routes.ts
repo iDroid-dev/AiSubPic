@@ -13,9 +13,12 @@ import { middleware } from './kernel.js'
 const TelegramWebhookController= () => import('#controllers/telegram_controller')
 const SessionController = () => import('#controllers/session_controller')
 const AdminController = () => import('#controllers/admin_controller')
- const PlansController = () => import('#controllers/plans_controller')
- const BotsController = () => import('#controllers/bots_controller')
+const PlansController = () => import('#controllers/plans_controller')
+const BotsController = () => import('#controllers/bots_controller')
 const UsersController = () => import('#controllers/users_controller')
+const AiModelsController = () => import('#controllers/ai_models_controller')
+
+
 router.on('/').render('pages/home')
 router.get('/login', [SessionController, 'showLogin']).as('login.show')
 router.post('/login', [SessionController, 'login']).as('login.action')
@@ -46,6 +49,14 @@ router.group(() => {
   router.get('/plans/create', [PlansController, 'create']).as('admin.plans.create')
   router.post('/plans', [PlansController, 'store']).as('admin.plans.store')
   router.get('/plans/:id/delete', [PlansController, 'delete']).as('admin.plans.delete')
+
+  // === МОДЕЛИ ===
+  router.get('/models', [AiModelsController, 'index']).as('admin.models.index')
+  router.get('/models/create', [AiModelsController, 'create']).as('admin.models.create')
+  router.post('/models', [AiModelsController, 'store']).as('admin.models.store')
+  router.get('/models/:id', [AiModelsController, 'edit']).as('admin.models.edit')
+  router.post('/models/:id', [AiModelsController, 'update']).as('admin.models.update')
+  router.delete('/models/:id', [AiModelsController, 'delete']).as('admin.models.delete')
 
 
 })

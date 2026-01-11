@@ -1,0 +1,54 @@
+@layout.app({ title: "Редактирование модели" })
+
+@slot('main')
+  <div class="max-w-2xl mx-auto">
+    <div class="flex items-center gap-4 mb-6">
+      <a href="{{ route('admin.models.index') }}" class="btn btn-sm btn-outline">← Назад</a>
+      <h1 class="text-2xl font-bold">Редактирование: {{ model.name }}</h1>
+    </div>
+
+    <form action="{{ route('admin.models.update', { id: model.id }) }}" method="POST" class="card bg-base-100 shadow-xl border border-base-200">
+      {{ csrfField() }}
+      
+      <div class="card-body gap-4">
+        
+        {{-- Название --}}
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-bold">Название</span>
+          </label>
+          <input type="text" name="name" value="{{ model.name }}" class="input input-bordered" required />
+        </div>
+
+        {{-- Slug --}}
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-bold">Slug (Replicate ID)</span>
+          </label>
+          <input type="text" name="slug" value="{{ model.slug }}" class="input input-bordered font-mono" required />
+        </div>
+
+        {{-- Активность --}}
+        <div class="form-control">
+          <label class="label cursor-pointer justify-start gap-4">
+            <span class="label-text font-bold">Активна</span> 
+            <input type="checkbox" name="is_active" class="toggle toggle-success" {{ model.isActive ? 'checked' : '' }} />
+          </label>
+          <label class="label">
+             <span class="label-text-alt">Если выключить, модель пропадет из списка выбора в настройках бота.</span>
+          </label>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="card-actions justify-between">
+            <div class="text-xs opacity-50 self-center">
+                Создана: {{ model.createdAt.toFormat('dd.MM.yyyy') }}
+            </div>
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </div>
+      </div>
+    </form>
+  </div>
+@endslot
+@end

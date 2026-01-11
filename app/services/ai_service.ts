@@ -12,19 +12,15 @@ export class AiService {
     })
   }
 
-  async generateImage(prompt: string) {
+  async generateImage(prompt: string, modelSlug: string) {
     try {
-      // 1. АВТО-ПЕРЕВОД НА АНГЛИЙСКИЙ
-      // Flux понимает только английский. Переводим любой входящий текст.
       console.log(`[AI] Translating: "${prompt}"...`)
-      
       const { text: translatedPrompt } = await translate(prompt, { to: 'en' })
-      
       console.log(`[AI] Translated to: "${translatedPrompt}"`)
-
-      // 2. ОТПРАВЛЯЕМ ВО FLUX (Используем Flux Dev для качества)
+      
+      console.log(`[AI] Using model: ${modelSlug}`)
       const output = await this.replicate.run(
-        "black-forest-labs/flux-dev", 
+       modelSlug as any,
         {
           input: {
             prompt: translatedPrompt,  
@@ -49,3 +45,4 @@ export class AiService {
 }
 
 export default new AiService()
+ 

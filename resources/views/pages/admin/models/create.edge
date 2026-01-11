@@ -1,0 +1,49 @@
+@layout.app({ title: "Добавить AI Модель" })
+
+@slot('main')
+  <div class="max-w-2xl mx-auto">
+    <div class="flex items-center gap-4 mb-6">
+      <a href="{{ route('admin.models.index') }}" class="btn btn-sm btn-outline">← Назад</a>
+      <h1 class="text-2xl font-bold">Новая модель</h1>
+    </div>
+
+    <form action="{{ route('admin.models.store') }}" method="POST" class="card bg-base-100 shadow-xl border border-base-200">
+      {{ csrfField() }}
+      
+      <div class="card-body gap-4">
+        
+        {{-- Название --}}
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-bold">Название (для тебя)</span>
+          </label>
+          <input type="text" name="name" placeholder="Например: Flux Dev (Fast)" class="input input-bordered" required />
+          <label class="label">
+            <span class="label-text-alt opacity-70">Будет отображаться в выпадающем списке настроек бота.</span>
+          </label>
+        </div>
+
+        {{-- Slug --}}
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-bold">Slug модели (Replicate ID)</span>
+          </label>
+          <input type="text" name="slug" placeholder="Например: black-forest-labs/flux-dev" class="input input-bordered font-mono" required />
+          <label class="label">
+            <span class="label-text-alt opacity-70">
+              Точный ID модели с сайта replicate.com. <br>
+              Примеры: <code>black-forest-labs/flux-dev</code>, <code>black-forest-labs/flux-schnell</code>
+            </span>
+          </label>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="card-actions justify-end">
+          <button type="submit" class="btn btn-primary">Сохранить модель</button>
+        </div>
+      </div>
+    </form>
+  </div>
+@endslot
+@end

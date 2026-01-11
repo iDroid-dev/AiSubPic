@@ -3,6 +3,7 @@ import Bot from '#models/bot'
 import BotPaymentConfig from '#models/bot_payment_config'
 import env from '#start/env'
 import { Bot as GrammyBot } from 'grammy'
+import AiModel from '#models/ai_model'  
 
 export default class BotsController {
   
@@ -48,6 +49,7 @@ export default class BotsController {
     
     // Загружаем настройки оплаты
     await bot.load('paymentConfigs')
+    const aiModels = await AiModel.query().where('isActive', true)
     
     // Преобразуем массив конфигов в удобный объект для view: { lava_ru: { ... }, wata: { ... } }
     const paymentMap: any = {}
@@ -55,7 +57,7 @@ export default class BotsController {
         paymentMap[pc.provider] = { ...pc.credentials, is_enabled: pc.isEnabled }
     })
 
-    return view.render('pages/admin/bots/edit', { bot, paymentMap })
+    return view.render('pages/admin/bots/edit', { bot, paymentMap, aiModels })
   }
 
   // Обновление бота и настроек оплаты
@@ -63,10 +65,11 @@ export default class BotsController {
     const bot = await Bot.findOrFail(params.id)
     
     // 1. Обновляем основные поля
-    const mainData = request.only(['name', 'token', 'welcome_text', 'is_active'])
+    const mainData = request.only(['name', 'token', 'welcome_text', 'is_active', 'ai_model_id'])
     bot.name = mainData.name
     bot.token = mainData.token
     bot.isActive = !!mainData.is_active // checkbox возвращает 'on' или undefined
+    bot.aiModelId = mainData.ai_model_id ? Number(mainData.ai_model_id) : null // 👈 Сохраняем ID модели
     
     // Обновляем текст приветствия в JSON конфиге
     const currentConfig = bot.config || {}

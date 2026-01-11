@@ -36,6 +36,30 @@
         </div>
     </div>
 
+    {{-- Блок выбора AI Модели --}}
+<div class="card bg-base-100 shadow-xl border border-base-200 mt-6">
+  <div class="card-body">
+    <h2 class="card-title">🤖 AI Модель</h2>
+
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text">Выберите модель для генерации</span>
+      </label>
+      <select name="ai_model_id" class="select select-bordered w-full">
+        <option value="" {{ !bot.aiModelId ? 'selected' : '' }}>-- По умолчанию (Вшитая в код) --</option>
+        @each(model in aiModels)
+          <option value="{{ model.id }}" {{ bot.aiModelId == model.id ? 'selected' : '' }}>
+            {{ model.name }} ({{ model.slug }})
+          </option>
+        @endeach
+      </select>
+      <div class="label">
+        <span class="label-text-alt">Если не выбрано, будет использована модель по умолчанию из кода.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
     {{-- Платежка LAVA --}}
     <div class="card bg-base-100 shadow mb-6 border-l-4 border-orange-500">
         <div class="card-body">
