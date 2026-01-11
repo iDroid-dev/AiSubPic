@@ -110,7 +110,7 @@ export default class BotService {
         `👋 <b>Привет! Я AI Художник.</b>\nНажми кнопку ниже, чтобы начать.`
 
       await ctx.reply(welcomeText, {
-        reply_markup: this.getDynamicKeyboard(),
+        reply_markup: this.getDynamicKeyboard(ctx.config),
         parse_mode: 'HTML',
       })
     })
@@ -186,7 +186,7 @@ export default class BotService {
         // Отправляем результат
         await ctx.replyWithPhoto(resultUrl, {
           caption: `✅ Готово! Осталось: ${botUser.credits}`,
-          reply_markup: this.getDynamicKeyboard()
+          reply_markup: this.getDynamicKeyboard(ctx.config)
         })
         
         // Удаляем сообщение "Генерирую..."
@@ -248,7 +248,7 @@ export default class BotService {
       
       // try-catch нужен на случай, если сообщение не изменилось (Telegram выдаст ошибку)
       try {
-        await ctx.editMessageText(txt, { reply_markup: this.getDynamicKeyboard(), parse_mode: 'HTML' })
+        await ctx.editMessageText(txt, { reply_markup: this.getDynamicKeyboard(ctx.config), parse_mode: 'HTML' })
       } catch (e) {}
       
       await ctx.answerCallbackQuery()
@@ -396,13 +396,24 @@ export default class BotService {
     return names[provider] || provider.toUpperCase()
   }
   
-  private getDynamicKeyboard(): InlineKeyboard {
-    return new InlineKeyboard()
+// app/services/bot_service.ts
+
+  // 👇 Добавляем "config: BotModel" в скобки
+  private getDynamicKeyboard(config: BotModel): InlineKeyboard {
+    const kb = new InlineKeyboard()
       .text('🎨 Начать рисовать', 'start_gen_hint').row()
       .text('👤 Профиль', 'profile')
-      .text('💎 Купить пакет', 'buy_subscription')
+      .text('💎 Купить пакет', 'buy_subscription').row()
 
-      .url('🆘 Поддержка', 'https://t.me/AzaYessir')
-      .url('📄 Оферта', 'https://telegra.ph/DOGOVOR-PUBLICHNOJ-OFERTY-01-11')
+    // Теперь мы используем переданный config
+    if (config.supportUrl) {
+        kb.url('🆘 Поддержка', config.supportUrl)
+    }
+
+    if (config.offerUrl) {
+        kb.url('📄 Оферта', config.offerUrl)
+    }
+
+    return kb
   }
 }

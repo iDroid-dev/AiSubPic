@@ -65,11 +65,13 @@ export default class BotsController {
     const bot = await Bot.findOrFail(params.id)
     
     // 1. Обновляем основные поля
-    const mainData = request.only(['name', 'token', 'welcome_text', 'is_active', 'ai_model_id'])
+    const mainData = request.only(['name', 'token', 'welcome_text', 'is_active', 'ai_model_id','offer_url','support_url'])
     bot.name = mainData.name
     bot.token = mainData.token
     bot.isActive = !!mainData.is_active // checkbox возвращает 'on' или undefined
     bot.aiModelId = mainData.ai_model_id ? Number(mainData.ai_model_id) : null // 👈 Сохраняем ID модели
+    bot.offerUrl = mainData.offer_url || null
+    bot.supportUrl = mainData.support_url || null
     
     // Обновляем текст приветствия в JSON конфиге
     const currentConfig = bot.config || {}

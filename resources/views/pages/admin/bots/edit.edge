@@ -36,29 +36,50 @@
         </div>
     </div>
 
-    {{-- Блок выбора AI Модели --}}
-<div class="card bg-base-100 shadow-xl border border-base-200 mt-6">
-  <div class="card-body">
-    <h2 class="card-title">🤖 AI Модель</h2>
+    {{-- Ссылки и Контакты --}}
+    <div class="card bg-base-100 shadow mb-6 border-l-4 border-blue-400">
+      <div class="card-body">
+        <h3 class="card-title">Ссылки и Контакты</h3>
+        
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Ссылка на поддержку (Telegram)</span>
+          </label>
+          <input type="text" name="support_url" value="{{ bot.supportUrl || '' }}" placeholder="https://t.me/username" class="input input-bordered" />
+        </div>
 
-    <div class="form-control">
-      <label class="label">
-        <span class="label-text">Выберите модель для генерации</span>
-      </label>
-      <select name="ai_model_id" class="select select-bordered w-full">
-        <option value="" {{ !bot.aiModelId ? 'selected' : '' }}>-- По умолчанию (Пусто) --</option>
-        @each(model in aiModels)
-          <option value="{{ model.id }}" {{ bot.aiModelId == model.id ? 'selected' : '' }}>
-            {{ model.name }} ({{ model.slug }})
-          </option>
-        @endeach
-      </select>
-      <div class="label">
-        <span class="label-text-alt">Если не выбрано, модель не будет использована. Модель выбирай обязательно</span>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Ссылка на Оферту</span>
+          </label>
+          <input type="text" name="offer_url" value="{{ bot.offerUrl || '' }}" placeholder="https://telegra.ph/..." class="input input-bordered" />
+        </div>
       </div>
     </div>
-  </div>
-</div>
+
+    {{-- Блок выбора AI Модели --}}
+    <div class="card bg-base-100 shadow-xl border border-base-200 mb-6">
+      <div class="card-body">
+        <h2 class="card-title">🤖 AI Модель</h2>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Выберите модель для генерации</span>
+          </label>
+          <select name="ai_model_id" class="select select-bordered w-full">
+            <option value="" {{ !bot.aiModelId ? 'selected' : '' }}>-- По умолчанию (Пусто) --</option>
+            @each(model in aiModels)
+              <option value="{{ model.id }}" {{ bot.aiModelId == model.id ? 'selected' : '' }}>
+                {{ model.name }} ({{ model.slug }})
+              </option>
+            @endeach
+          </select>
+          <div class="label">
+            <span class="label-text-alt">Если не выбрано, модель не будет использована. Модель выбирай обязательно</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
     {{-- Платежка LAVA --}}
     <div class="card bg-base-100 shadow mb-6 border-l-4 border-orange-500">

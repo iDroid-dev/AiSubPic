@@ -12,6 +12,12 @@ export default class Bot extends BaseModel {
   @column() declare username: string | null
   @column() declare isActive: boolean
   @column() declare aiModelId: number | null
+
+  @column()
+  declare offerUrl: string | null
+
+  @column()
+  declare supportUrl: string | null
   
   // Улучшенная версия для JSON поля (гарантирует, что это всегда будет объект)
   @column({
