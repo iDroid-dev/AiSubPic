@@ -391,10 +391,7 @@ export default class BotService {
   private getProviderName(provider: string): string {
     const names: Record<string, string> = {
       lava_ru: '💳 Банковская карта (Lava)',
-      wata_pro: '💳 Карты РФ (Wata)',
       heleket: '🪙 Криптовалюта / USD',
-      yookassa: 'ЮKassa',
-      robokassa: 'Robokassa'
     }
     return names[provider] || provider.toUpperCase()
   }
@@ -404,5 +401,8 @@ export default class BotService {
       .text('🎨 Начать рисовать', 'start_gen_hint').row()
       .text('👤 Профиль', 'profile')
       .text('💎 Купить пакет', 'buy_subscription')
+
+      .url('🆘 Поддержка', 'https://t.me/AzaYessir')
+      .url('📄 Оферта', 'https://telegra.ph/DOGOVOR-PUBLICHNOJ-OFERTY-01-11')
   }
 }
