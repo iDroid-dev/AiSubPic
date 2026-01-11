@@ -90,7 +90,7 @@
         </li>
 
         <li>
-          <a href="{{ route('admin.models.index') }}" class="{{ request.matches('admin.models.*') ? 'active' : '' }}">
+          <a href="{{ route('admin.models.index') }}" class="{{ request.url().startsWith('/admin/models') ? 'active' : '' }}">
             🧠 AI Модели
           </a>
         </li>
