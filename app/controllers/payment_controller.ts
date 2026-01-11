@@ -19,10 +19,14 @@ export default class BotPaymentWebhookController {
     return view.render('pages/admin/payments/index', { orders })
   }
 
-  public async approve({ params, response, session }: HttpContext) {
-    const order = await Order.findOrFail(params.id)
+ public async approve({ params, response, session }: HttpContext) {
+    // 1. Загружаем заказ вместе с пользователем и ботом
+    const order = await Order.query()
+      .where('id', params.id)
+      .preload('user')
+      .preload('bot')
+      .firstOrFail()
 
-    // Твой статус в модели: 'paid' (оплачено)
     if (order.status === 'paid') {
       session.flash('error', 'Заказ уже оплачен')
       return response.redirect().back()
@@ -35,14 +39,36 @@ export default class BotPaymentWebhookController {
       .first()
 
     if (botUser) {
+      // 2. Начисляем кредиты
       botUser.credits += plan.credits
       await botUser.save()
 
+      // 3. Обновляем статус заказа
       order.status = 'paid'
       order.providerResponse = { manual_approve_by: 'admin', date: new Date().toISOString() }
       await order.save()
 
-      session.flash('success', `Заказ #${order.id} подтвержден. Начислено ${plan.credits} кр.`)
+      // 4. ОТПРАВЛЯЕМ УВЕДОМЛЕНИЕ В ТЕЛЕГРАМ
+      try {
+        const { Bot } = await import('grammy')
+        const bot = new Bot(order.bot.token)
+        
+        const notificationText = 
+          `✅ <b>Оплата подтверждена!</b>\n\n` +
+          `Вам начислено: <b>${plan.credits}</b> генераций.\n` +
+          `Спасибо, что пользуетесь нашим сервисом!`
+
+        await bot.api.sendMessage(order.user.telegramId!, notificationText, {
+          parse_mode: 'HTML'
+        })
+      } catch (telegramError) {
+        console.error('[Approve Notification Error]:', telegramError)
+        // Мы не прерываем процесс, если уведомление не ушло (например, бот заблокирован)
+      }
+
+      session.flash('success', `Заказ #${order.id} подтвержден. Начислено ${plan.credits} кр. Юзер уведомлен.`)
+    } else {
+      session.flash('error', 'Связь пользователя с ботом не найдена.')
     }
 
     return response.redirect().back()

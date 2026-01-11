@@ -73,29 +73,31 @@
               </td>
 
               <td class="text-right">
-                @if(order.status === 'pending')
-                  <form 
-                    action="{{ route('admin.payments.approve', { id: order.id }) }}" 
-                    method="POST" 
-                    onsubmit="return confirm('Вы уверены, что хотите подтвердить оплату ВРУЧНУЮ? Юзеру будут начислены кредиты по тарифу.')"
-                  >
-                    {{ csrfField() }}
-                    <button type="submit" class="btn btn-xs btn-primary btn-outline">
-                      Подтвердить
-                    </button>
-                  </form>
-                @endif
+                <div class="flex justify-end gap-2">
+                  @if(order.status === 'pending')
+                    <form 
+                      action="{{ route('admin.payments.approve', { id: order.id }) }}" 
+                      method="POST" 
+                      onsubmit="return confirm('Вы уверены, что хотите подтвердить оплату ВРУЧНУЮ? Юзеру будут начислены кредиты по тарифу.')"
+                    >
+                      {{ csrfField() }}
+                      <button type="submit" class="btn btn-xs btn-primary btn-outline">
+                        Подтвердить
+                      </button>
+                    </form>
+                  @endif
 
-                {{-- Если нужно посмотреть сырой ответ от платежки --}}
-                @if(order.providerResponse)
-                   <button 
-                     class="btn btn-xs btn-ghost btn-square" 
-                     onclick="alert(JSON.stringify({{ order.providerResponse }}, null, 2))"
-                     title="Посмотреть лог"
-                   >
-                     📋
-                   </button>
-                @endif
+                  {{-- Кнопка вызова модалки с логом --}}
+                  @if(order.providerResponse)
+                    <button 
+                      class="btn btn-xs btn-ghost btn-square" 
+                      onclick="showLogModal('{{ order.id }}', {{ JSON.stringify(order.providerResponse) }})"
+                      title="Посмотреть лог"
+                    >
+                      📋
+                    </button>
+                  @endif
+                </div>
               </td>
             </tr>
           @else
@@ -109,5 +111,36 @@
       </table>
     </div>
   </div>
+
+  {{-- УНИВЕРСАЛЬНАЯ МОДАЛКА ДЛЯ ЛОГОВ --}}
+  <dialog id="log_modal" class="modal">
+    <div class="modal-box w-11/12 max-w-3xl">
+      <h3 class="font-bold text-lg mb-4">Данные транзакции #<span id="modal_order_id"></span></h3>
+      
+      <div class="bg-neutral text-neutral-content p-4 rounded-lg overflow-x-auto">
+        <pre id="modal_json_content" class="text-xs leading-relaxed"></pre>
+      </div>
+      
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn">Закрыть</button>
+        </form>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
+  {{-- Скрипт для заполнения модалки --}}
+  <script>
+    function showLogModal(id, data) {
+      document.getElementById('modal_order_id').innerText = id;
+      // Красиво форматируем JSON с отступами
+      document.getElementById('modal_json_content').innerText = JSON.stringify(data, null, 2);
+      log_modal.showModal();
+    }
+  </script>
+
 @endslot
 @end
