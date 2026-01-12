@@ -162,7 +162,7 @@ export default class BotService {
       // Если в админке не выбрана модель (null), используем Flux Dev по умолчанию
       const modelSlug = currentBot?.aiModel?.slug || 'black-forest-labs/flux-dev'
 
-      const msg = await ctx.reply(`🎨 <b>Генерирую...</b>\n<i>Модель: ${currentBot?.aiModel?.name || 'Flux Dev'}</i>`, { parse_mode: 'HTML' })
+      const msg = await ctx.reply(`🎨 <b>Генерирую...</b>`, { parse_mode: 'HTML' })
 
       try {
         // 4. Запуск генерации (передаем промпт и SLUG модели)
