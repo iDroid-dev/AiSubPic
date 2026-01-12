@@ -267,27 +267,32 @@
   </section>
 
   {{-- Pricing Section --}}
+ 
   <section id="pricing" class="py-24 relative overflow-hidden">
     {{-- Decorative Blobs --}}
     <div class="absolute top-1/2 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2"></div>
 
     <div class="container mx-auto px-4 relative z-10">
       <div class="text-center mb-16">
-        <h2 class="text-3xl md:text-5xl font-bold mb-4">Простые и честные тарифы</h2>
-        <p class="text-base-content/60">Платите один раз, пользуйтесь когда угодно. Никаких сгорающих подписок.</p>
+        <h2 class="text-3xl md:text-5xl font-bold mb-4">Единые кредиты для всех моделей</h2>
+        <p class="text-base-content/60">
+          Покупаете кредиты — тратите на любые нейросети (Flux, Recraft, Ideogram).<br>
+          Чем дороже пакет, тем выгоднее цена за 1 кредит.
+        </p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        {{-- Данные актуальных тарифов --}}
         @assign(myPlans = [
-          { id: 'start', name: 'Старт', price: 149, count: 100, desc: 'Подойдет для знакомства' },
-          { id: 'hit', name: 'Популярный', price: 499, count: 500, desc: 'Лучшая цена за 1 фото' },
-          { id: 'pro', name: 'Максимум', price: 999, count: 1500, desc: 'Для активных криэйторов' }
+          { id: 'start', name: 'Starter', price: 290, credits: 200, desc: 'Для старта и тестов', isHit: false },
+          { id: 'basic', name: 'Basic', price: 990, credits: 700, desc: 'Оптимальный выбор', isHit: true },
+          { id: 'pro', name: 'Pro', price: 2500, credits: 1800, desc: 'Максимальная выгода', isHit: false }
         ])
 
         @each(plan in myPlans)
-          <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 border border-base-content/10 relative overflow-hidden group flex flex-col h-full">
+          <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 border border-base-content/10 relative overflow-hidden group flex flex-col h-full {{ plan.isHit ? 'border-primary/50 shadow-primary/20 scale-105 z-10' : '' }}">
             
-            @if(plan.id === 'hit')
+            @if(plan.isHit)
               <div class="absolute top-0 right-0 bg-primary text-primary-content text-xs font-bold px-3 py-1 rounded-bl-lg z-10">
                 ХИТ ПРОДАЖ
               </div>
@@ -302,37 +307,57 @@
               
               <div class="divider my-0"></div>
 
-              <ul class="w-full space-y-4 my-8 text-left">
+              <div class="my-8 w-full">
+                  <div class="text-center mb-2">
+                      <span class="text-4xl font-bold text-primary">{{ plan.credits }}</span>
+                      <span class="text-xl font-medium opacity-80">кредитов</span>
+                  </div>
+                  <p class="text-xs opacity-50 text-center px-4">
+                      Хватит на {{ Math.floor(plan.credits / 1) }} - {{ Math.floor(plan.credits / 9) }} изображений <br>
+                      (зависит от выбранной модели)
+                  </p>
+              </div>
+
+              <ul class="w-full space-y-3 text-left text-sm">
                 <li class="flex items-center gap-3">
-                  <div class="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold">✓</div>
-                  <span class="font-bold text-lg">{{ plan.count }} генераций</span>
+                  <div class="w-5 h-5 rounded-full bg-success/20 flex items-center justify-center text-success text-xs font-bold">✓</div>
+                  <span>Доступ ко всем моделям</span>
                 </li>
                 <li class="flex items-center gap-3">
-                  <div class="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold">✓</div>
-                  <span>Генерация Pro-качества</span>
+                  <div class="w-5 h-5 rounded-full bg-success/20 flex items-center justify-center text-success text-xs font-bold">✓</div>
+                  <span>Без срока действия (не сгорают)</span>
                 </li>
                 <li class="flex items-center gap-3">
-                  <div class="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold">✓</div>
-                  <span>Высокое разрешение</span>
+                  <div class="w-5 h-5 rounded-full bg-success/20 flex items-center justify-center text-success text-xs font-bold">✓</div>
+                  <span>Высокая скорость (Fast Mode)</span>
                 </li>
-                <li class="flex items-center gap-3">
-                   <div class="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold">✓</div>
-                   <span class="text-base-content/80">{{ plan.desc }}</span>
+                 <li class="flex items-center gap-3">
+                   <div class="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">★</div>
+                   <span class="font-medium text-base-content/80">{{ plan.desc }}</span>
                 </li>
               </ul>
             </div>
             
             <div class="p-6 pt-0 mt-auto w-full">
-                <a href="https://t.me/aisubpic_bot?start=buy_{{ plan.id }}" class="btn btn-primary w-full shadow-lg group-hover:scale-[1.02] transition-transform">
-                  Выбрать тариф
+                <a href="https://t.me/aisubpic_bot?start=buy" class="btn btn-primary w-full shadow-lg group-hover:scale-[1.02] transition-transform">
+                  Купить в боте
                 </a>
             </div>
           </div>
         @endeach
       </div>
+      
+      <div class="mt-12 text-center max-w-2xl mx-auto bg-base-200 p-6 rounded-2xl border border-base-content/5">
+          <h4 class="font-bold mb-2">💰 Сколько стоит 1 картинка?</h4>
+          <div class="flex justify-center gap-4 text-sm opacity-80 flex-wrap">
+              <span>⚡️ Flux Schnell: <b>1 кредит</b></span>
+              <span>🎨 Recraft V3: <b>4 кредита</b></span>
+              <span>📝 Ideogram: <b>9 кредитов</b></span>
+          </div>
+      </div>
+
     </div>
   </section>
-
   {{-- SEO Text Block (Content for Search Engines) --}}
   <section id="seo-info" class="py-16 bg-base-100 border-t border-base-content/5">
     <div class="container mx-auto px-4 max-w-4xl text-base-content/80 leading-relaxed">
