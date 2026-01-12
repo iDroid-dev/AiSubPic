@@ -2,7 +2,6 @@
 
 @slot('main')
 <div class="max-w-3xl mx-auto">
-  {{-- Хлебные крошки --}}
   <div class="text-sm breadcrumbs mb-4">
     <ul>
       <li><a href="{{ route('admin.dashboard') }}">Дашборд</a></li> 
@@ -36,11 +35,11 @@
             </div>
         </div>
 
-        {{-- БЛОК 2: Цены и Сроки (Выделим фоном) --}}
+        {{-- БЛОК 2: Цены и Сроки --}}
         <div class="bg-base-200 p-5 rounded-xl mb-6">
             <h3 class="text-sm font-bold text-gray-500 uppercase mb-3">Финансы и Условия</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {{-- Цена --}}
+                {{-- Цена RUB --}}
                 <div class="form-control">
                     <label class="label"><span class="label-text">Цена</span></label>
                     <input type="number" name="price" placeholder="199" class="input input-bordered w-full" required />
@@ -55,28 +54,43 @@
                     </select>
                 </div>
 
+                {{-- 👇 НОВОЕ ПОЛЕ: STARS --}}
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Цена (Stars) ⭐️</span></label>
+                    <input type="number" name="stars_price" placeholder="100" class="input input-bordered w-full" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 {{-- Срок --}}
                 <div class="form-control">
                     <label class="label"><span class="label-text">Срок (дней)</span></label>
                     <input type="number" name="duration_days" value="30" class="input input-bordered w-full" required />
                 </div>
+                 {{-- Количество генераций --}}
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-bold">Количество генераций</span></label>
+                    <input type="number" name="generations_count" placeholder="50" class="input input-bordered w-full" required />
+                </div>
             </div>
         </div>
 
-        {{-- БЛОК 3: Наполнение и Настройки --}}
+        {{-- БЛОК 3: Дополнительно --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            {{-- Количество генераций --}}
-            <div class="form-control">
-                <label class="label"><span class="label-text font-bold">Количество генераций</span></label>
-                <input type="number" name="generations_count" placeholder="50" class="input input-bordered w-full" required />
-            </div>
-
             {{-- Сортировка --}}
             <div class="form-control">
                 <label class="label"><span class="label-text">Порядок сортировки</span></label>
                 <input type="number" name="sort_order" value="0" class="input input-bordered w-full" />
                 <label class="label">
                     <span class="label-text-alt text-gray-500">0 - самый первый в списке</span>
+                </label>
+            </div>
+            
+            {{-- Активация --}}
+            <div class="form-control p-3 border rounded-lg hover:bg-base-200 transition-colors">
+                <label class="cursor-pointer label">
+                  <span class="label-text font-bold">Сразу активировать?</span> 
+                  <input type="checkbox" name="is_active" class="toggle toggle-success" checked />
                 </label>
             </div>
         </div>
@@ -87,16 +101,6 @@
             <textarea name="description" class="textarea textarea-bordered h-20" placeholder="Заметка о тарифе..."></textarea>
         </div>
 
-        {{-- АКТИВАЦИЯ (То, что просили добавить) --}}
-        <div class="form-control w-full sm:w-1/2 p-3 border rounded-lg hover:bg-base-200 transition-colors">
-            <label class="cursor-pointer label">
-              <span class="label-text font-bold">Сразу активировать?</span> 
-              {{-- checked по умолчанию, чтобы новый тариф сразу был виден --}}
-              <input type="checkbox" name="is_active" class="toggle toggle-success" checked />
-            </label>
-        </div>
-
-        {{-- Кнопки --}}
         <div class="card-actions justify-end mt-8 pt-4 border-t border-base-200">
             <a href="{{ route('admin.plans.index') }}" class="btn btn-ghost">Отмена</a>
             <button type="submit" class="btn btn-primary">Создать тариф</button>

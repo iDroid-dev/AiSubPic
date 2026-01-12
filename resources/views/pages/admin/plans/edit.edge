@@ -14,7 +14,6 @@
     <div class="card-body">
       <div class="flex justify-between items-center mb-6">
           <h2 class="card-title text-2xl">Редактирование: {{ plan.name }}</h2>
-          {{-- Бейджик статуса --}}
           @if(plan.isActive)
             <div class="badge badge-success">Активен</div>
           @else
@@ -25,7 +24,6 @@
       <form action="{{ route('admin.plans.update', { id: plan.id }) }}" method="POST">
         {{ csrfField() }}
 
-        {{-- Выбор Бота --}}
         <div class="form-control mb-4">
             <label class="label">Бот</label>
             <select name="bot_id" class="select select-bordered" required>
@@ -51,7 +49,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
             <div class="form-control">
-                <label class="label">Цена</label>
+                <label class="label">Цена (Руб)</label>
                 <input type="number" name="price" value="{{ plan.price }}" class="input input-bordered" required />
             </div>
             
@@ -63,15 +61,23 @@
                 </select>
             </div>
 
+            {{-- 👇 НОВОЕ ПОЛЕ --}}
+            <div class="form-control">
+                <label class="label">Цена (Stars) ⭐️</label>
+                <input type="number" name="stars_price" value="{{ plan.starsPrice || '' }}" class="input input-bordered" placeholder="Не задано" />
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             <div class="form-control">
                 <label class="label">Срок (дней)</label>
                 <input type="number" name="duration_days" value="{{ plan.durationDays }}" class="input input-bordered" required />
             </div>
-        </div>
 
-        <div class="form-control mt-4">
-            <label class="label">Кредиты (Генераций)</label>
-            <input type="number" name="generations_count" value="{{ plan.credits }}" class="input input-bordered input-lg" required />
+            <div class="form-control">
+                <label class="label">Кредиты (Генераций)</label>
+                <input type="number" name="generations_count" value="{{ plan.credits }}" class="input input-bordered" required />
+            </div>
         </div>
 
         <div class="form-control mt-4">
@@ -79,7 +85,6 @@
             <textarea name="description" class="textarea textarea-bordered h-24">{{ plan.description || '' }}</textarea>
         </div>
 
-        {{-- Переключатель Активности --}}
         <div class="form-control w-52 mt-6">
             <label class="cursor-pointer label border p-2 rounded-lg hover:bg-base-200">
               <span class="label-text font-bold">Тариф активен?</span> 
@@ -96,6 +101,5 @@
     </div>
   </div>
 </div>
-
 @endslot
 @end

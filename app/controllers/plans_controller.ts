@@ -23,13 +23,14 @@ public async index({ view }: HttpContext) {
         const data = request.only([
           'name', 'price', 'generations_count', 
           'duration_days', 'currency', 'sort_order', 'description', 
-          'bot_id' // 👈 Важно
+          'bot_id', 'stars_price'  
         ])
         
         await Plan.create({
             name: data.name,
             price: data.price,
             credits: data.generations_count,
+            starsPrice: data.stars_price ? Number(data.stars_price) : null,
             durationDays: data.duration_days,
             currency: data.currency || 'RUB',
             sortOrder: data.sort_order || 0,
@@ -56,7 +57,7 @@ public async index({ view }: HttpContext) {
     const data = request.only([
       'name', 'price', 'generations_count', 
       'duration_days', 'currency', 'sort_order', 'description', 
-      'bot_id', 'is_active'
+      'bot_id', 'is_active', 'stars_price'
     ])
 
     plan.merge({
@@ -64,6 +65,7 @@ public async index({ view }: HttpContext) {
         price: data.price,
         credits: data.generations_count,
         durationDays: data.duration_days,
+        starsPrice: data.stars_price ? Number(data.stars_price) : null,
         currency: data.currency,
         sortOrder: data.sort_order,
         description: data.description,

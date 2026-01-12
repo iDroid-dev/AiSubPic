@@ -103,6 +103,20 @@ export default class BotsController {
         )
     }
 
+    // 3. 👇 TELEGRAM STARS (НОВОЕ)
+    // Мы ожидаем структуру name="stars[is_enabled]"
+    const stars = request.input('stars')
+    
+    if (stars) {
+        await BotPaymentConfig.updateOrCreate(
+            { botId: bot.id, provider: 'telegram_stars' }, // 👈 Просто новый провайдер в той же таблице
+            { 
+                isEnabled: !!stars.is_enabled,
+                credentials: {} // Stars не требуют API ключей, храним пустой объект
+            }
+        )
+    }
+
     session.flash('success', 'Настройки сохранены')
     return response.redirect().back()
   }
