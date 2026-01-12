@@ -19,7 +19,7 @@ export type BotContext = Context & SessionFlavor<SessionData> & {
 export default class BotService {
   // 🔥 Хранилище живых ботов
   private static instances = new Map<string, Bot<BotContext>>()
-  // 🔥 Хранилище актуальных конфигов (Fix проблемы с потерей контекста)
+  // 🔥 Хранилище актуальных конфигов (Чтобы не терялся контекст)
   private static configs = new Map<string, BotModel>()
 
   private bot: Bot<BotContext>
@@ -30,7 +30,7 @@ export default class BotService {
     this.config = config
     this.paymentService = new PaymentService()
 
-    // ✅ ВСЕГДА обновляем конфиг в статической памяти при каждом запросе
+    // ✅ ВСЕГДА обновляем конфиг в статической памяти
     BotService.configs.set(token, config)
 
     // 1. ПРОВЕРКА: Если бот уже есть в памяти
@@ -39,7 +39,7 @@ export default class BotService {
       return
     }
 
-    // 2. СОЗДАНИЕ НОВОГО БОТА
+    // 2. СОЗДАНИЕ
     const botId = Number(token.split(':')[0])
     const botInfo = {
       id: botId,
@@ -60,11 +60,10 @@ export default class BotService {
       initial: (): SessionData => ({ isAwaitingPrompt: false }),
     }))
 
-    // 🔥 ИСПРАВЛЕНИЕ: Прокидываем конфиг из статики, а не из this
+    // Прокидываем конфиг (берем всегда свежий из статики)
     this.bot.use(async (ctx, next) => {
-      // Берем самый свежий конфиг для этого токена
       const currentConfig = BotService.configs.get(token)
-      ctx.config = currentConfig || this.config 
+      ctx.config = currentConfig || this.config
       await next()
     })
     
@@ -79,7 +78,7 @@ export default class BotService {
     this.registerMessageHandlers()
     this.registerPaymentHandlers()
 
-    // Сохраняем инстанс бота в память
+    // Сохраняем в память
     BotService.instances.set(token, this.bot)
   }
 
@@ -150,7 +149,6 @@ export default class BotService {
       
       const BASE_CREDIT_PRICE = 0.01 
       const modelCostUsd = currentBot?.aiModel?.costUsd ? Number(currentBot.aiModel.costUsd) : 0.01
-      
       const creditsToDeduct = Math.ceil(modelCostUsd / BASE_CREDIT_PRICE)
 
       // ==============================================================
@@ -224,7 +222,7 @@ export default class BotService {
     })
   }
 
-  // === ОБРАБОТЧИКИ STARS (Платежи) ===
+  // === ОБРАБОТЧИКИ STARS ===
   private registerPaymentHandlers() {
     this.bot.on('pre_checkout_query', async (ctx) => {
         try {
@@ -270,6 +268,23 @@ export default class BotService {
   // === CALLBACKS (Кнопки) ===
   private registerCallbacks() {
     
+    // 🛠 ХЕЛПЕР: Безопасное обновление (Фото -> Текст или Текст -> Текст)
+    const sendOrEdit = async (ctx: BotContext, text: string, keyboard: InlineKeyboard) => {
+        try {
+            // Если сообщение — это фото, редактировать его в текст нельзя. Удаляем и шлем новое.
+            if (ctx.callbackQuery?.message?.photo) {
+                await ctx.deleteMessage()
+                await ctx.reply(text, { reply_markup: keyboard, parse_mode: 'HTML' })
+            } else {
+                // Если это текст — редактируем, чтобы не мигало
+                await ctx.editMessageText(text, { reply_markup: keyboard, parse_mode: 'HTML' })
+            }
+        } catch (e) {
+            // Если что-то пошло не так, просто шлем новое
+            await ctx.reply(text, { reply_markup: keyboard, parse_mode: 'HTML' })
+        }
+    }
+
     this.bot.callbackQuery('start_gen_hint', async (ctx) => {
       ctx.session.isAwaitingPrompt = true 
       await ctx.reply('✍️ <b>Напишите ваш запрос:</b>', { parse_mode: 'HTML' })
@@ -279,28 +294,25 @@ export default class BotService {
     this.bot.callbackQuery('main_menu', async (ctx) => {
       ctx.session.isAwaitingPrompt = false
       const txt = ctx.config.config?.welcome_text || 'Главное меню'
-      try {
-        await ctx.editMessageText(txt, { reply_markup: this.getDynamicKeyboard(ctx.config), parse_mode: 'HTML' })
-      } catch {}
+      
+      await sendOrEdit(ctx, txt, this.getDynamicKeyboard(ctx.config)) // ✅ Fix
       await ctx.answerCallbackQuery()
     })
 
     this.bot.callbackQuery('profile', async (ctx) => {
         const globalUser = await User.findBy('telegramId', ctx.from.id)
-        if(!globalUser) return
+        if(!globalUser) return ctx.answerCallbackQuery()
         
         const botUser = await BotUser.query()
             .where('bot_id', ctx.config.id)
             .where('user_id', globalUser.id)
             .first()
-        if(!botUser) return
+        if(!botUser) return ctx.answerCallbackQuery()
         
-        const text = `👤 <b>Личный кабинет</b>\n\n🆔 ID: <code>${globalUser.telegramId}</code>\n💰 Доступно: <b>${botUser.credits}</b>`
+        const text = `👤 <b>Личный кабинет</b>\n\n🆔 ID: <code>${globalUser.telegramId}</code>\n💰 Доступно: <b>${botUser.credits} кредитов</b>`
+        const kb = new InlineKeyboard().text('💎 Пополнить', 'buy_subscription').row().text('🔙 Меню', 'main_menu')
         
-        await ctx.editMessageText(text, {
-            reply_markup: new InlineKeyboard().text('💎 Пополнить', 'buy_subscription').row().text('🔙 Меню', 'main_menu'),
-            parse_mode: 'HTML'
-        })
+        await sendOrEdit(ctx, text, kb) // ✅ Fix
         await ctx.answerCallbackQuery()
     })
 
@@ -318,7 +330,7 @@ export default class BotService {
         })
         kb.text('🔙 Назад', 'main_menu')
         
-        await ctx.editMessageText('👇 <b>Выберите пакет:</b>', { reply_markup: kb, parse_mode: 'HTML' })
+        await sendOrEdit(ctx, '👇 <b>Выберите пакет:</b>', kb) // ✅ Fix
         await ctx.answerCallbackQuery()
     })
     
@@ -349,7 +361,7 @@ export default class BotService {
 
         const text = `💳 Тариф: <b>${plan.name}</b>\n💰 Цена: <b>${plan.price}₽</b>` + (plan.starsPrice ? ` / <b>${plan.starsPrice} ⭐️</b>` : '')
         
-        await ctx.editMessageText(text, { reply_markup: keyboard, parse_mode: 'HTML' })
+        await sendOrEdit(ctx, text, keyboard) // ✅ Fix
         await ctx.answerCallbackQuery()
     })
 
@@ -399,7 +411,8 @@ export default class BotService {
             const paymentUrl = await this.paymentService.createPayment(ctx.config.id, user.id, planId, provider)
             const kb = new InlineKeyboard().url('🔗 Оплатить', paymentUrl).row().text('🔙 Отмена', `select_plan:${planId}`)
             
-            await ctx.editMessageText(`✅ <b>Счет готов!</b>\nНажмите кнопку для оплаты.`, { reply_markup: kb, parse_mode: 'HTML' })
+            await sendOrEdit(ctx, `✅ <b>Счет готов!</b>\nНажмите кнопку для оплаты.`, kb) // ✅ Fix
+            
         } catch (e) {
             console.error('Payment Error:', e)
             await ctx.editMessageText(`❌ Ошибка создания платежа.`, { reply_markup: new InlineKeyboard().text('🔙 Назад', `select_plan:${planId}`) })
