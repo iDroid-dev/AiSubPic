@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="yandex-verification" content="1b4683daaac7654a" />
   
   {{-- SEO Meta Tags --}}
   <title>Генератор Изображений в Telegram | Нейросеть AiSubPic</title>
@@ -313,7 +314,7 @@
                       <span class="text-xl font-medium opacity-80">кредитов</span>
                   </div>
                   <p class="text-xs opacity-50 text-center px-4">
-                      Хватит на {{ Math.floor(plan.credits / 1) }} - {{ Math.floor(plan.credits / 9) }} изображений <br>
+                      Хватит на - {{ Math.floor(plan.credits / 9) }} изображений <br>
                       (зависит от выбранной модели)
                   </p>
               </div>
@@ -345,15 +346,6 @@
             </div>
           </div>
         @endeach
-      </div>
-      
-      <div class="mt-12 text-center max-w-2xl mx-auto bg-base-200 p-6 rounded-2xl border border-base-content/5">
-          <h4 class="font-bold mb-2">💰 Сколько стоит 1 картинка?</h4>
-          <div class="flex justify-center gap-4 text-sm opacity-80 flex-wrap">
-              <span>⚡️ Flux Schnell: <b>1 кредит</b></span>
-              <span>🎨 Recraft V3: <b>4 кредита</b></span>
-              <span>📝 Ideogram: <b>9 кредитов</b></span>
-          </div>
       </div>
 
     </div>
