@@ -68,7 +68,7 @@ export default class BotsController {
     const mainData = request.only(['name', 'token', 'welcome_text', 'is_active', 'ai_model_id','offer_url','support_url'])
     bot.name = mainData.name
     bot.token = mainData.token
-    bot.isActive = !!mainData.is_active // checkbox возвращает 'on' или undefined
+    bot.isActive = true
     bot.aiModelId = mainData.ai_model_id ? Number(mainData.ai_model_id) : null // 👈 Сохраняем ID модели
     bot.offerUrl = mainData.offer_url || null
     bot.supportUrl = mainData.support_url || null
