@@ -5,7 +5,7 @@ import User from '#models/user'
 import BotUser from '#models/bot_user'
 import Plan from '#models/plan'
 import Generation from '#models/generation'
-import Order from '#models/order' // ✅ Добавлено
+import Order from '#models/order'
 import PaymentService from '#services/payment_service'
 
 export interface SessionData {
@@ -19,6 +19,8 @@ export type BotContext = Context & SessionFlavor<SessionData> & {
 export default class BotService {
   // 🔥 Хранилище живых ботов
   private static instances = new Map<string, Bot<BotContext>>()
+  // 🔥 Хранилище актуальных конфигов (Fix проблемы с потерей контекста)
+  private static configs = new Map<string, BotModel>()
 
   private bot: Bot<BotContext>
   private config: BotModel
@@ -28,15 +30,16 @@ export default class BotService {
     this.config = config
     this.paymentService = new PaymentService()
 
+    // ✅ ВСЕГДА обновляем конфиг в статической памяти при каждом запросе
+    BotService.configs.set(token, config)
+
     // 1. ПРОВЕРКА: Если бот уже есть в памяти
     if (BotService.instances.has(token)) {
       this.bot = BotService.instances.get(token)!
-      // Обновляем конфиг в памяти, чтобы подхватить новые ссылки/настройки
-      this.config = config 
       return
     }
 
-    // 2. СОЗДАНИЕ
+    // 2. СОЗДАНИЕ НОВОГО БОТА
     const botId = Number(token.split(':')[0])
     const botInfo = {
       id: botId,
@@ -57,9 +60,11 @@ export default class BotService {
       initial: (): SessionData => ({ isAwaitingPrompt: false }),
     }))
 
-    // Прокидываем конфиг
+    // 🔥 ИСПРАВЛЕНИЕ: Прокидываем конфиг из статики, а не из this
     this.bot.use(async (ctx, next) => {
-      ctx.config = this.config 
+      // Берем самый свежий конфиг для этого токена
+      const currentConfig = BotService.configs.get(token)
+      ctx.config = currentConfig || this.config 
       await next()
     })
     
@@ -72,9 +77,9 @@ export default class BotService {
     this.registerCommands()
     this.registerCallbacks()
     this.registerMessageHandlers()
-    this.registerPaymentHandlers() // ✅ Stars: Обработчики платежей
+    this.registerPaymentHandlers()
 
-    // Сохраняем в память
+    // Сохраняем инстанс бота в память
     BotService.instances.set(token, this.bot)
   }
 
@@ -105,14 +110,14 @@ export default class BotService {
         `👋 <b>Привет! Я AI Художник.</b>\nНажми кнопку ниже, чтобы начать.`
 
       await ctx.reply(welcomeText, {
-        reply_markup: this.getDynamicKeyboard(ctx.config), // ✅ Передаем конфиг
+        reply_markup: this.getDynamicKeyboard(ctx.config),
         parse_mode: 'HTML',
       })
     })
   }
 
   // === ГЕНЕРАЦИЯ ===
-private registerMessageHandlers() {
+  private registerMessageHandlers() {
     this.bot.on('message:text', async (ctx) => {
       // 1. Базовые проверки
       if (!ctx.from || ctx.message.text.startsWith('/')) return
@@ -131,7 +136,7 @@ private registerMessageHandlers() {
 
       const currentBot = await BotModel.query()
         .where('id', ctx.config.id)
-        .preload('aiModel') // 👈 Важно: подгружаем модель, чтобы узнать цену
+        .preload('aiModel')
         .first()
       
       const botUser = await BotUser.query()
@@ -143,22 +148,14 @@ private registerMessageHandlers() {
       // 💰 РАСЧЕТ СТОИМОСТИ ГЕНЕРАЦИИ
       // ==============================================================
       
-      // Базовая цена 1 кредита = $0.01
       const BASE_CREDIT_PRICE = 0.01 
-      
-      // Получаем цену модели из базы (если модели нет, считаем по минимуму 0.01)
-      // costUsd мы добавили в миграции на прошлом шаге
       const modelCostUsd = currentBot?.aiModel?.costUsd ? Number(currentBot.aiModel.costUsd) : 0.01
       
-      // Считаем сколько кредитов списать: Цена модели / 0.01
-      // Пример: Flux ($0.01) -> 1 кредит
-      // Пример: Recraft ($0.04) -> 4 кредита
-      // Пример: Ideogram ($0.09) -> 9 кредитов
       const creditsToDeduct = Math.ceil(modelCostUsd / BASE_CREDIT_PRICE)
 
       // ==============================================================
 
-      // 3. Проверка баланса с учетом цены модели
+      // 3. Проверка баланса
       if (!botUser || botUser.credits < creditsToDeduct) {
         ctx.session.isAwaitingPrompt = false
         return ctx.reply(
@@ -179,7 +176,7 @@ private registerMessageHandlers() {
         const images = await AiService.generateImage(ctx.message.text, modelSlug)
         const resultUrl = Array.isArray(images) ? String(images[0]) : String(images)
 
-        // 4. Списание кредитов (динамическое)
+        // 4. Списание кредитов
         botUser.credits -= creditsToDeduct
         await botUser.save()
 
@@ -189,11 +186,10 @@ private registerMessageHandlers() {
           prompt: ctx.message.text,
           resultUrl: resultUrl,
           isSuccessful: true,
-          // Можно добавить поле cost: creditsToDeduct, если хочешь вести статистику трат
         })
 
         await ctx.replyWithPhoto(resultUrl, {
-          caption: `✅ Готово! Осталось: ${botUser.credits} генераций`,
+          caption: `✅ Готово! Осталось: ${botUser.credits} кредитов`,
           reply_markup: this.getDynamicKeyboard(ctx.config)
         })
         
@@ -202,8 +198,6 @@ private registerMessageHandlers() {
 
       } catch (e) {
         console.error('[Bot] Gen Error:', e)
-        
-        // При ошибке деньги НЕ списываем (botUser.save вызывается только в try)
         
         await Generation.create({
             userId: globalUser.id,
@@ -232,7 +226,6 @@ private registerMessageHandlers() {
 
   // === ОБРАБОТЧИКИ STARS (Платежи) ===
   private registerPaymentHandlers() {
-    // 1. Pre-Checkout (Обязательно отвечать < 10 сек)
     this.bot.on('pre_checkout_query', async (ctx) => {
         try {
             await ctx.answerPreCheckoutQuery(true)
@@ -241,7 +234,6 @@ private registerMessageHandlers() {
         }
     })
 
-    // 2. Успешная оплата
     this.bot.on('message:successful_payment', async (ctx) => {
         const payment: SuccessfulPayment = ctx.message.successful_payment
         const orderId = Number(payment.invoice_payload)
@@ -253,7 +245,6 @@ private registerMessageHandlers() {
             .preload('plan')
             .first()
 
-        // Если заказ найден и еще не оплачен
         if (order && order.status !== 'paid') {
             const botUser = await BotUser.query()
                 .where('bot_id', order.botId)
@@ -261,11 +252,9 @@ private registerMessageHandlers() {
                 .first()
 
             if (botUser) {
-                // Начисляем
                 botUser.credits += order.plan.credits
                 await botUser.save()
 
-                // Обновляем статус
                 order.status = 'paid'
                 order.providerResponse = payment
                 await order.save()
@@ -339,7 +328,6 @@ private registerMessageHandlers() {
         const plan = await Plan.find(planId)
         if (!plan) return ctx.answerCallbackQuery('Тариф не найден')
 
-        // Загружаем конфиги
         const currentBot = await BotModel.findOrFail(ctx.config.id)
         await currentBot.load('paymentConfigs')
         
@@ -351,7 +339,6 @@ private registerMessageHandlers() {
         
         configs.forEach(conf => {
             const btnName = this.getProviderName(conf.provider)
-            // Если это Stars — отдельный обработчик, иначе общий через сервис
             const callbackData = conf.provider === 'telegram_stars' 
                 ? `pay:${plan.id}:telegram_stars`
                 : `pay:${plan.id}:${conf.provider}`
@@ -366,7 +353,7 @@ private registerMessageHandlers() {
         await ctx.answerCallbackQuery()
     })
 
-    // ✅ ОПЛАТА ЧЕРЕЗ STARS
+    // ОПЛАТА ЧЕРЕЗ STARS
     this.bot.callbackQuery(/^pay:(\d+):telegram_stars$/, async (ctx) => {
         const planId = Number(ctx.match[1])
         const plan = await Plan.findOrFail(planId)
@@ -380,7 +367,7 @@ private registerMessageHandlers() {
             userId: user.id,
             botId: ctx.config.id,
             planId: plan.id,
-            amount: plan.starsPrice, // Важно: цена в звездах
+            amount: plan.starsPrice,
             currency: 'XTR',
             paymentProvider: 'telegram_stars',
             status: 'pending'
@@ -401,7 +388,6 @@ private registerMessageHandlers() {
         const planId = Number(ctx.match[1])
         const provider = ctx.match[2]
         
-        // Stars мы обработали выше, тут только внешние ссылки
         if (provider === 'telegram_stars') return
 
         const user = await User.findBy('telegramId', ctx.from.id)
@@ -430,7 +416,6 @@ private registerMessageHandlers() {
     return names[provider] || provider.toUpperCase()
   }
   
-  // ✅ Принимаем конфиг аргументом
   private getDynamicKeyboard(config: BotModel): InlineKeyboard {
     const kb = new InlineKeyboard()
       .text('🎨 Начать рисовать', 'start_gen_hint').row()
