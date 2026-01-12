@@ -74,7 +74,7 @@
       </div>
     </div>
 
-    <div class="card bg-base-100 shadow border-l-4 border-yellow-400 mb-6">
+<div class="card bg-base-100 shadow border-l-4 border-yellow-400 mb-6">
       <div class="card-body p-4">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
@@ -86,9 +86,9 @@
           </div>
           <input 
             type="checkbox" 
-            name="providers[telegram_stars][is_enabled]" 
+            name="stars[is_enabled]" 
             class="toggle toggle-warning"
-            {{ bot.paymentConfig?.providers?.telegram_stars?.is_enabled ? 'checked' : '' }}
+            {{ paymentMap.telegram_stars?.isEnabled ? 'checked' : '' }}
           />
         </div>
       </div>
