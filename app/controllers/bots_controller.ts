@@ -104,19 +104,19 @@ export default class BotsController {
     }
 
       // Получаем данные, но если их нет (чекбокс снят), берем пустой объект {}
-      const stars = request.input('stars') || {} 
+      // 4. Обновляем платежки (Telegram Stars)
+          // ⚠️ ВАЖНО: Ищем 'telegram_stars', так как в HTML name="telegram_stars[...]"
+          const starsData = request.input('telegram_stars') || {} 
 
-      // Теперь обновляем запись ВСЕГДА, а не только когда stars существует
-      await BotPaymentConfig.updateOrCreate(
-          { botId: bot.id, provider: 'telegram_stars' },
-          { 
-              // Если stars был null (мы заменили на {}), то is_enabled будет undefined -> false
-              // Если stars был, но галочка снята (редкий кейс), тоже false
-              // Если галочка стоит, будет true
-              isEnabled: !!stars.is_enabled, 
-              credentials: {} 
-          }
-      )
+          await BotPaymentConfig.updateOrCreate(
+              { botId: bot.id, provider: 'telegram_stars' },
+              { 
+                  // Если starsData пришел (галочка стоит), is_enabled будет 'on' -> true
+                  // Если starsData пуст (галочка снята), is_enabled будет undefined -> false
+                  isEnabled: !!starsData.is_enabled, 
+                  credentials: {} 
+              }
+          )
 
     session.flash('success', 'Настройки сохранены')
     return response.redirect().back()
