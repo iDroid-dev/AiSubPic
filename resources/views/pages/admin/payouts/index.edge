@@ -1,0 +1,77 @@
+@layout.app({ title: "Управление выплатами" })
+
+@slot('main')
+<div class="max-w-4xl mx-auto">
+    <div class="flex items-center gap-4 mb-6">
+        <a href="/admin/dashboard" class="btn btn-sm btn-outline">← Назад</a>
+        <h1 class="text-2xl font-bold">История выплат и расходов</h1>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        {{-- Форма добавления выплаты --}}
+        <div class="card bg-base-100 shadow-xl h-fit">
+            <div class="card-body">
+                <h2 class="card-title text-lg">Записать расход</h2>
+                <form action="{{ route('admin.payouts.store') }}" method="POST" class="flex flex-col gap-3">
+                    {{ csrfField() }}
+                    
+                    <div class="form-control">
+                        <label class="label"><span class="label-text">Сумма (₽)</span></label>
+                        <input type="number" name="amount" placeholder="5000" class="input input-bordered" required />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label"><span class="label-text">Комментарий</span></label>
+                        <input type="text" name="description" placeholder="Вывод на карту / Оплата Replicate" class="input input-bordered" required />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-2">➖ Списать</button>
+                </form>
+            </div>
+        </div>
+
+        {{-- История --}}
+        <div class="md:col-span-2 card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="card-title">История операций</h2>
+                    <div class="badge badge-lg badge-ghost">Всего выведено: {{ total }} ₽</div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Сумма</th>
+                                <th>Комментарий</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @each(payout in payouts)
+                            <tr>
+                                <td class="text-xs opacity-70">{{ payout.createdAt.toFormat('dd.MM.yyyy HH:mm') }}</td>
+                                <td class="font-bold text-red-500">-{{ payout.amount }} ₽</td>
+                                <td>{{ payout.description }}</td>
+                                <td>
+                                    <a href="{{ route('admin.payouts.delete', { id: payout.id }) }}" 
+                                       onclick="return confirm('Удалить запись? Баланс вернется.')"
+                                       class="btn btn-ghost btn-xs text-error">✕</a>
+                                </td>
+                            </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                    @if(payouts.length === 0)
+                        <div class="text-center py-4 opacity-50">Истории выплат пока нет</div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+@endslot
+@end

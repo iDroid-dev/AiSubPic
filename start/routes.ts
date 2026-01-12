@@ -19,7 +19,7 @@ const UsersController = () => import('#controllers/users_controller')
 const AiModelsController = () => import('#controllers/ai_models_controller')
 const MailingController = () => import('#controllers/mailing_controller')
 const PaymentsController = () => import('#controllers/payment_controller')
-
+const PayoutsController = () => import('#controllers/payouts_controller')
 
 
 router.on('/').render('pages/home')
@@ -68,6 +68,11 @@ router.group(() => {
   router.get('/mailing', [MailingController, 'index']).as('admin.mailing.index')
   router.get('/mailing/create', [MailingController, 'create']).as('admin.mailing.create')
   router.post('/mailing', [MailingController, 'store']).as('admin.mailing.store')
+
+  // Выплаты
+  router.get('/payouts', [PayoutsController, 'index']).as('admin.payouts.index')
+  router.post('/payouts', [PayoutsController, 'store']).as('admin.payouts.store')
+  router.get('/payouts/:id/delete', [PayoutsController, 'delete']).as('admin.payouts.delete')
   
   // Личное сообщение
   router.post('/users/:id/message', [MailingController, 'sendPersonal']).as('admin.users.message')

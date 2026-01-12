@@ -25,9 +25,9 @@
         <div class="flex-1 px-2 mx-2 text-xl font-bold">Admin Panel</div>
       </div>
 
-      {{-- Сюда подставляется контент страниц (Dashboard, Bots и т.д.) --}}
+      {{-- Сюда подставляется контент страниц --}}
       <div class="p-8">
-        {{-- Вывод Flash сообщений (Успех/Ошибка) --}}
+        {{-- Вывод Flash сообщений --}}
         @if(flashMessages.has('success'))
           <div class="alert alert-success mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -51,7 +51,7 @@
     <div class="drawer-side z-20">
       <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label> 
       <ul class="menu p-4 w-80 min-h-full bg-base-100 text-base-content shadow-xl">
-        {{-- Логотип / Заголовок --}}
+        {{-- Логотип --}}
         <li class="mb-6">
             <div class="flex items-center gap-4 px-2">
                 <div class="avatar placeholder">
@@ -92,7 +92,14 @@
         {{-- ПЛАТЕЖИ --}}
         <li>
           <a href="{{ route('admin.payments.index') }}" class="{{ request.url().startsWith('/admin/payments') ? 'active' : '' }}">
-            💰 Платежи
+            💰 Платежи (Входящие)
+          </a>
+        </li>
+
+        {{-- 👇 ДОБАВИЛ СЮДА 👇 --}}
+        <li>
+          <a href="{{ route('admin.payouts.index') }}" class="{{ request.url().startsWith('/admin/payouts') ? 'active' : '' }}">
+            💸 Выплаты / Расходы
           </a>
         </li>
 
