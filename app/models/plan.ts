@@ -16,6 +16,10 @@ export default class Plan extends BaseModel {
   @column()
   declare price: number 
 
+  
+  @column()
+  declare starsPrice: number | null
+
   @column()
   declare currency: string
 

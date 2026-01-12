@@ -51,7 +51,7 @@ export default class BotsController {
     await bot.load('paymentConfigs')
     const aiModels = await AiModel.query().where('isActive', true)
     
-    // Преобразуем массив конфигов в удобный объект для view: { lava_ru: { ... }, wata: { ... } }
+ 
     const paymentMap: any = {}
     bot.paymentConfigs.forEach(pc => {
         paymentMap[pc.provider] = { ...pc.credentials, is_enabled: pc.isEnabled }
@@ -80,7 +80,7 @@ export default class BotsController {
     await bot.save()
 
     // 2. Обновляем платежки (Lava)
-    const lavaData = request.input('lava') // { shop_id, secret_key, is_enabled }
+    const lavaData = request.input('lava') 
     if (lavaData) {
         await BotPaymentConfig.updateOrCreate(
             { botId: bot.id, provider: 'lava_ru' },
@@ -109,7 +109,7 @@ export default class BotsController {
 
 async toggleStatus({ params, response, session }: HttpContext) {
     const bot = await Bot.findOrFail(params.id)
-    // Берем домен из конфига или env. Если нет - используй свой прямой адрес
+ 
     const DOMAIN = env.get('APP_URL') || 'https://aisubpic.ru' 
 
     if (bot.isActive) {
@@ -120,7 +120,7 @@ async toggleStatus({ params, response, session }: HttpContext) {
         
         if (!data.ok) {
           session.flash('error', `Ошибка удаления Webhook: ${data.description}`)
-          // Мы не прерываем, так как в базе статус всё равно надо сменить
+          
         }
       } catch (e) {
         console.error('Telegram API Error', e)
@@ -164,8 +164,7 @@ async toggleStatus({ params, response, session }: HttpContext) {
   } catch (e) {
     console.error('Не удалось удалить вебхук при удалении бота', e)
   }
-
-  // 2. Удаляем из базы
+ 
   await bot.delete()
 
   session.flash('success', `Бот ${bot.name} полностью удален`)
