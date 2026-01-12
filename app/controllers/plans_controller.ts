@@ -22,7 +22,7 @@ public async index({ view }: HttpContext) {
         // Добавляем bot_id в запрос
         const data = request.only([
           'name', 'price', 'generations_count', 
-          'duration_days', 'currency', 'sort_order', 'description', 
+          'currency', 'sort_order', 'description', 
           'bot_id', 'stars_price'  
         ])
         
@@ -31,7 +31,6 @@ public async index({ view }: HttpContext) {
             price: data.price,
             credits: data.generations_count,
             starsPrice: data.stars_price ? Number(data.stars_price) : null,
-            durationDays: data.duration_days,
             currency: data.currency || 'RUB',
             sortOrder: data.sort_order || 0,
             description: data.description,
@@ -56,7 +55,7 @@ public async index({ view }: HttpContext) {
     
     const data = request.only([
       'name', 'price', 'generations_count', 
-      'duration_days', 'currency', 'sort_order', 'description', 
+     'currency', 'sort_order', 'description', 
       'bot_id', 'is_active', 'stars_price'
     ])
 
@@ -64,7 +63,6 @@ public async index({ view }: HttpContext) {
         name: data.name,
         price: data.price,
         credits: data.generations_count,
-        durationDays: data.duration_days,
         starsPrice: data.stars_price ? Number(data.stars_price) : null,
         currency: data.currency,
         sortOrder: data.sort_order,
