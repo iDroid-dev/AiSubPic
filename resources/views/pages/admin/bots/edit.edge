@@ -84,12 +84,12 @@
               <p class="text-xs opacity-60">Нативная оплата внутри Telegram</p>
             </div>
           </div>
-          <input 
-            type="checkbox" 
-            name="stars[is_enabled]" 
-            class="toggle toggle-warning"
-            {{ paymentMap.telegram_stars?.isEnabled ? 'checked' : '' }}
-          />
+            <input 
+              type="checkbox" 
+              name="telegram_stars[is_enabled]" 
+              class="toggle toggle-warning"
+              {{ paymentMap.telegram_stars?.is_enabled ? 'checked' : '' }}
+            />
         </div>
       </div>
     </div>
