@@ -31,7 +31,7 @@ export default class BotsController {
         name: data.name,
         token: data.token,
         username: me.username,
-        isActive: true,
+        isActive: false,
         config: { welcome_text: 'Привет! Я генерирую картинки.' }
       })
 

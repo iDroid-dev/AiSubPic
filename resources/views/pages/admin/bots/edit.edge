@@ -26,13 +26,6 @@
                 <label class="label">Приветствие (/start)</label>
                 <textarea name="welcome_text" class="textarea textarea-bordered h-24">{{ bot.config?.welcome_text || '' }}</textarea>
             </div>
-
-            <div class="form-control w-52 mt-4">
-                <label class="cursor-pointer label">
-                  <span class="label-text">Бот включен?</span> 
-                  <input type="checkbox" name="is_active" class="toggle toggle-primary" {{ bot.isActive ? 'checked' : '' }} />
-                </label>
-            </div>
         </div>
     </div>
 
