@@ -28,14 +28,22 @@
           <input type="text" name="slug" value="{{ model.slug }}" class="input input-bordered font-mono" required />
         </div>
 
+        {{-- 💰 НОВОЕ ПОЛЕ: Стоимость --}}
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-bold">Себестоимость ($)</span>
+          </label>
+          <input type="number" step="0.0001" name="cost_usd" value="{{ model.costUsd }}" class="input input-bordered" required />
+           <label class="label">
+            <span class="label-text-alt opacity-70">База: $0.01 = 1 кредит. Если укажешь $0.04, спишется 4 кредита.</span>
+          </label>
+        </div>
+
         {{-- Активность --}}
         <div class="form-control">
           <label class="label cursor-pointer justify-start gap-4">
             <span class="label-text font-bold">Активна</span> 
             <input type="checkbox" name="is_active" class="toggle toggle-success" {{ model.isActive ? 'checked' : '' }} />
-          </label>
-          <label class="label">
-             <span class="label-text-alt">Если выключить, модель пропадет из списка выбора в настройках бота.</span>
           </label>
         </div>
 

@@ -18,9 +18,6 @@
             <span class="label-text font-bold">Название (для тебя)</span>
           </label>
           <input type="text" name="name" placeholder="Например: Flux Dev (Fast)" class="input input-bordered" required />
-          <label class="label">
-            <span class="label-text-alt opacity-70">Будет отображаться в выпадающем списке настроек бота.</span>
-          </label>
         </div>
 
         {{-- Slug --}}
@@ -29,10 +26,18 @@
             <span class="label-text font-bold">Slug модели (Replicate ID)</span>
           </label>
           <input type="text" name="slug" placeholder="Например: black-forest-labs/flux-dev" class="input input-bordered font-mono" required />
+        </div>
+
+        {{-- 💰 НОВОЕ ПОЛЕ: Стоимость --}}
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-bold">Себестоимость за 1 шт ($)</span>
+          </label>
+          <input type="number" step="0.0001" name="cost_usd" placeholder="0.01" class="input input-bordered w-full" required />
           <label class="label">
             <span class="label-text-alt opacity-70">
-              Точный ID модели с сайта replicate.com. <br>
-              Примеры: <code>black-forest-labs/flux-dev</code>, <code>black-forest-labs/flux-schnell</code>
+              Цена генерации в долларах. Исходя из неё будут списываться кредиты.<br>
+              Примеры: 0.01 (Flux Schnell), 0.04 (Recraft), 0.09 (Ideogram)
             </span>
           </label>
         </div>

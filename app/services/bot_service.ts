@@ -98,7 +98,7 @@ export default class BotService {
 
       await BotUser.firstOrCreate(
         { botId: ctx.config.id, userId: user.id },
-        { credits: 1 }
+        { credits: 10 }
       )
 
       const welcomeText = ctx.config.config?.welcome_text ||
@@ -112,8 +112,9 @@ export default class BotService {
   }
 
   // === ГЕНЕРАЦИЯ ===
-  private registerMessageHandlers() {
+private registerMessageHandlers() {
     this.bot.on('message:text', async (ctx) => {
+      // 1. Базовые проверки
       if (!ctx.from || ctx.message.text.startsWith('/')) return
 
       if (!ctx.session.isAwaitingPrompt) {
@@ -124,12 +125,13 @@ export default class BotService {
 
       const AiService = (await import('#services/ai_service')).default
       
+      // 2. Загружаем данные
       const globalUser = await User.findBy('telegramId', ctx.from.id)
       if (!globalUser) return
 
       const currentBot = await BotModel.query()
         .where('id', ctx.config.id)
-        .preload('aiModel')
+        .preload('aiModel') // 👈 Важно: подгружаем модель, чтобы узнать цену
         .first()
       
       const botUser = await BotUser.query()
@@ -137,21 +139,48 @@ export default class BotService {
         .where('user_id', globalUser.id)
         .first()
 
-      if (!botUser || botUser.credits <= 0) {
+      // ==============================================================
+      // 💰 РАСЧЕТ СТОИМОСТИ ГЕНЕРАЦИИ
+      // ==============================================================
+      
+      // Базовая цена 1 кредита = $0.01
+      const BASE_CREDIT_PRICE = 0.01 
+      
+      // Получаем цену модели из базы (если модели нет, считаем по минимуму 0.01)
+      // costUsd мы добавили в миграции на прошлом шаге
+      const modelCostUsd = currentBot?.aiModel?.costUsd ? Number(currentBot.aiModel.costUsd) : 0.01
+      
+      // Считаем сколько кредитов списать: Цена модели / 0.01
+      // Пример: Flux ($0.01) -> 1 кредит
+      // Пример: Recraft ($0.04) -> 4 кредита
+      // Пример: Ideogram ($0.09) -> 9 кредитов
+      const creditsToDeduct = Math.ceil(modelCostUsd / BASE_CREDIT_PRICE)
+
+      // ==============================================================
+
+      // 3. Проверка баланса с учетом цены модели
+      if (!botUser || botUser.credits < creditsToDeduct) {
         ctx.session.isAwaitingPrompt = false
-        return ctx.reply('😔 У вас закончились генерации.', {
-          reply_markup: new InlineKeyboard().text('💎 Купить', 'buy_subscription'),
-        })
+        return ctx.reply(
+            `😔 <b>Недостаточно генераций!</b>\n\n` +
+            `Эта модель требует: <b>${creditsToDeduct} 💎</b>\n` +
+            `У вас на балансе: <b>${botUser?.credits || 0} 💎</b>`, 
+            {
+                parse_mode: 'HTML',
+                reply_markup: new InlineKeyboard().text('💎 Купить', 'buy_subscription'),
+            }
+        )
       }
 
       const modelSlug = currentBot?.aiModel?.slug || 'black-forest-labs/flux-dev'
-      const msg = await ctx.reply(`🎨 <b>Генерирую...</b>`, { parse_mode: 'HTML' })
+      const msg = await ctx.reply(`🎨 <b>Генерирую...</b>\nСпишется кредитов: ${creditsToDeduct}`, { parse_mode: 'HTML' })
 
       try {
         const images = await AiService.generateImage(ctx.message.text, modelSlug)
         const resultUrl = Array.isArray(images) ? String(images[0]) : String(images)
 
-        botUser.credits -= 1
+        // 4. Списание кредитов (динамическое)
+        botUser.credits -= creditsToDeduct
         await botUser.save()
 
         await Generation.create({
@@ -160,11 +189,12 @@ export default class BotService {
           prompt: ctx.message.text,
           resultUrl: resultUrl,
           isSuccessful: true,
+          // Можно добавить поле cost: creditsToDeduct, если хочешь вести статистику трат
         })
 
         await ctx.replyWithPhoto(resultUrl, {
-          caption: `✅ Готово! Осталось: ${botUser.credits}`,
-          reply_markup: this.getDynamicKeyboard(ctx.config) // ✅ Передаем конфиг
+          caption: `✅ Готово! Осталось: ${botUser.credits} генераций`,
+          reply_markup: this.getDynamicKeyboard(ctx.config)
         })
         
         await ctx.api.deleteMessage(ctx.chat.id, msg.message_id)
@@ -172,6 +202,9 @@ export default class BotService {
 
       } catch (e) {
         console.error('[Bot] Gen Error:', e)
+        
+        // При ошибке деньги НЕ списываем (botUser.save вызывается только в try)
+        
         await Generation.create({
             userId: globalUser.id,
             botId: ctx.config.id,

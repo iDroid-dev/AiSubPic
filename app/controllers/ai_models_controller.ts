@@ -4,7 +4,8 @@ import AiModel from '#models/ai_model'
 export default class AiModelsController {
   
   public async index({ view }: HttpContext) {
-    const models = await AiModel.all()
+    // Сортируем, чтобы активные были сверху
+    const models = await AiModel.query().orderBy('is_active', 'desc')
     return view.render('pages/admin/models/index', { models })
   }
 
@@ -13,8 +14,16 @@ export default class AiModelsController {
   }
 
   public async store({ request, response, session }: HttpContext) {
-    const data = request.only(['name', 'slug'])
-    await AiModel.create(data)
+    // 1. Принимаем cost_usd
+    const data = request.only(['name', 'slug', 'cost_usd'])
+    
+    await AiModel.create({
+        name: data.name,
+        slug: data.slug,
+        // Преобразуем в число (важно!) и мапим на поле модели camelCase
+        costUsd: Number(data.cost_usd) 
+    })
+
     session.flash('success', 'Модель добавлена')
     return response.redirect().toRoute('admin.models.index')
   }
@@ -26,12 +35,15 @@ export default class AiModelsController {
 
   public async update({ request, response, params, session }: HttpContext) {
     const model = await AiModel.findOrFail(params.id)
-    const data = request.only(['name', 'slug', 'is_active'])
+    
+    // 2. Принимаем cost_usd при обновлении
+    const data = request.only(['name', 'slug', 'is_active', 'cost_usd'])
     
     model.merge({
         name: data.name,
         slug: data.slug,
-        isActive: !!data.is_active
+        isActive: !!data.is_active,
+        costUsd: Number(data.cost_usd) // Обновляем цену
     })
     await model.save()
     

@@ -12,6 +12,9 @@ export default class AiModel extends BaseModel {
   declare slug: string
 
   @column()
+  declare costUsd: number
+
+  @column()
   declare isActive: boolean
 
   @column.dateTime({ autoCreate: true })
