@@ -42,10 +42,10 @@ public async edit({ view, params }: HttpContext) {
   }
 
   // НАЧИСЛЕНИЕ КРЕДИТОВ (Обновленный)
+ 
   public async addCredits({ request, response, params, session }: HttpContext) {
     const user = await User.findOrFail(params.id)
     
-    // Теперь мы жестко требуем bot_id и amount из формы
     const botId = request.input('bot_id')
     const amount = Number(request.input('amount'))
 
@@ -54,7 +54,6 @@ public async edit({ view, params }: HttpContext) {
         return response.redirect().back()
     }
 
-    // Ищем конкретную связку Юзер-Бот
     const botUser = await BotUser.query()
         .where('user_id', user.id)
         .where('bot_id', botId)
@@ -65,15 +64,50 @@ public async edit({ view, params }: HttpContext) {
         return response.redirect().back()
     }
 
-    // Обновляем баланс
+    // 1. Обновляем баланс
     botUser.credits += amount
     await botUser.save()
 
-    // Подгружаем имя для красивого уведомления
+    // 2. Подгружаем бота (нужен токен для отправки)
     await botUser.load('bot')
 
+    // =========================================================
+    // 🔔 УВЕДОМЛЕНИЕ В TELEGRAM
+    // =========================================================
+    if (user.telegramId && botUser.bot.token) {
+        try {
+            // Импортируем grammy динамически (или используйте import в начале файла)
+            const { Bot } = await import('grammy')
+            const telegramBot = new Bot(botUser.bot.token)
+            
+            // Формируем текст в зависимости от того, дали или забрали
+            let messageText = ''
+            
+            if (amount > 0) {
+                messageText = 
+                    `🎁 <b>Бонус от администратора!</b>\n\n` +
+                    `Вам начислено: <b>${amount}</b> кредитов.\n` +
+                    `Текущий баланс: <b>${botUser.credits}</b>`
+            } else {
+                messageText = 
+                    `⚠️ <b>Корректировка баланса</b>\n\n` +
+                    `Списано: <b>${Math.abs(amount)}</b> кредитов.\n` +
+                    `Текущий баланс: <b>${botUser.credits}</b>`
+            }
+
+            await telegramBot.api.sendMessage(user.telegramId, messageText, {
+                parse_mode: 'HTML'
+            })
+
+        } catch (error) {
+            console.error(`[Admin] Не удалось отправить уведомление юзеру ${user.id}:`, error)
+            // Мы НЕ прерываем работу, если сообщение не ушло (например, бот в бане)
+        }
+    }
+    // =========================================================
+
     const action = amount > 0 ? 'Начислено' : 'Списано'
-    session.flash('success', `${action} ${Math.abs(amount)} шт. для бота "${botUser.bot.name}". Новый баланс: ${botUser.credits}`)
+    session.flash('success', `${action} ${Math.abs(amount)} шт. для бота "${botUser.bot.name}". Уведомление отправлено.`)
     
     return response.redirect().back()
   }
