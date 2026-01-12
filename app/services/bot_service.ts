@@ -162,7 +162,7 @@ private registerMessageHandlers() {
       if (!botUser || botUser.credits < creditsToDeduct) {
         ctx.session.isAwaitingPrompt = false
         return ctx.reply(
-            `😔 <b>Недостаточно генераций!</b>\n\n` +
+            `😔 <b>Недостаточно кредитов!</b>\n\n` +
             `Эта модель требует: <b>${creditsToDeduct} 💎</b>\n` +
             `У вас на балансе: <b>${botUser?.credits || 0} 💎</b>`, 
             {
