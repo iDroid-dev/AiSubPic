@@ -42,7 +42,7 @@
                         <div class="text-xs opacity-50 font-mono">
                            ID: {{ user.telegramId || 'Web User' }}
                            @if(user.username)
-                             | <a href="https://t.me/{{ user.username }}" target="_blank" class="link link-hover text-blue-500">@{{ user.username }}</a>
+                             | <a href="https://t.me/{{ user.username }}" target="_blank" class="link link-hover text-blue-500">{{ user.username }}</a>
                            @endif
                         </div>
                     </div>
