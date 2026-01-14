@@ -66,7 +66,11 @@
                     <div class="text-xs opacity-50">{{ user.username ? '@'+user.username : '' }}</div>
                   </td>
                   <td>
-                    <span class="badge badge-ghost badge-sm">{{ user.botUsers.reduce((a, b) => a + b.credits, 0) }} gen</span>
+                    @let(totalCredits = user.botUsers.reduce((sum, item) => sum + item.credits, 0))
+  
+                  <span class="badge badge-ghost badge-sm">
+                    {{ totalCredits }} gen
+                  </span>
                   </td>
                   <td>{{ user.createdAt.toFormat('dd MMM HH:mm') }}</td>
                 </tr>
