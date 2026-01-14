@@ -66,9 +66,7 @@
                     <div class="text-xs opacity-50">{{ user.username ? '@'+user.username : '' }}</div>
                   </td>
                   <td>
-                    @each(wallet in user.botUsers)
-                    <span class="badge badge-ghost badge-sm">{{ wallet.credits }} gen</span>
-                    @endeach
+                    <span class="badge badge-ghost badge-sm">{{ user.botUsers.reduce((a, b) => a + b.credits, 0) }} gen</span>
                   </td>
                   <td>{{ user.createdAt.toFormat('dd MMM HH:mm') }}</td>
                 </tr>
