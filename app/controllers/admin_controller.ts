@@ -11,7 +11,7 @@ export default class AdminController {
 public async index({ view }: HttpContext) {
     
     // 1. Статистика пользователей
-    const usersCount = await User.query().preload('botUsers').count('* as total')
+    const usersCount = await User.query().count('* as total')
     const totalUsers = usersCount[0].$extras.total
 
     // 2. Статистика заказов
@@ -34,8 +34,9 @@ public async index({ view }: HttpContext) {
 
     // Последние юзеры для таблицы
     const latestUsers = await User.query()
-      .orderBy('created_at', 'desc')
-      .limit(5)
+          .preload('botUsers') // 👈 ВАЖНО: Подгружаем связь с таблицей кредитов
+          .orderBy('created_at', 'desc')
+          .limit(5)
 
     return view.render('pages/admin/dashboard', { 
       stats: {
