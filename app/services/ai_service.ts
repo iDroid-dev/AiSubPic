@@ -1,48 +1,54 @@
-// app/services/ai_service.ts
+import { translate } from 'bing-translate-api' // 👈 Используем Bing
+// Остальные импорты (Replicate и т.д.) оставь как были
 import Replicate from 'replicate'
 import env from '#start/env'
-import { translate } from '@vitalets/google-translate-api' // 👈 Импортируем переводчик
 
-export class AiService {
-  private replicate: Replicate
+export default class AiService {
+  private static replicate = new Replicate({
+    auth: env.get('REPLICATE_API_TOKEN'),
+  })
 
-  constructor() {
-    this.replicate = new Replicate({
-      auth: env.get('REPLICATE_API_TOKEN'),
-    })
-  }
+  /**
+   * Генерация изображения
+   */
+  public static async generateImage(prompt: string, model: string) {
+    let finalPrompt = prompt
 
-  async generateImage(prompt: string, modelSlug: string) {
+    // 1. Пытаемся перевести на английский (Bing)
     try {
-      console.log(`[AI] Translating: "${prompt}"...`)
-      const { text: translatedPrompt } = await translate(prompt, { to: 'en' })
-      console.log(`[AI] Translated to: "${translatedPrompt}"`)
-      
-      console.log(`[AI] Using model: ${modelSlug}`)
-      const output = await this.replicate.run(
-       modelSlug as any,
-        {
-          input: {
-            prompt: translatedPrompt,  
-            go_fast: true,   
-            guidance_scale: 3.5,
-            num_outputs: 1,
-            aspect_ratio: "1:1",
-            output_format: "webp",
-            output_quality: 90
-          }
+      // Проверяем, есть ли кириллица (русские буквы)
+      if (/[а-яА-ЯёЁ]/.test(prompt)) {
+        console.log(`[AI] Translating via Bing: "${prompt}"...`)
+        
+        // null - автоопределение языка, 'en' - куда переводим
+        const res = await translate(prompt, null, 'en')
+        
+        if (res && res.translation) {
+          finalPrompt = res.translation
+          console.log(`[AI] Translated: "${finalPrompt}"`)
         }
-      )
-      
-      return output as string[]
-    } catch (error) {
-      console.error('AI Service Error:', error)
-      // Если переводчик упал (бывает редко), пробуем отправить оригинал
-      // или выбрасываем ошибку дальше
-      throw error
+      }
+    } catch (e) {
+      console.error('[Translation Error] Bing failed, using original prompt:', e)
+      // ВАЖНО: Не выбрасываем ошибку, а просто используем оригинальный текст.
+      // Flux/Midjourney иногда понимают русский, это лучше чем краш.
+      finalPrompt = prompt 
     }
+
+    // 2. Генерируем (Твой старый код Replicate)
+    console.log(`[AI] Generating with model ${model}: "${finalPrompt}"`)
+
+    const input = {
+      prompt: finalPrompt,
+      go_fast: true,
+      megapixels: "1",
+      num_outputs: 1,
+      aspect_ratio: "1:1",
+      output_format: "webp",
+      output_quality: 80,
+    }
+
+    const output = await this.replicate.run(model as any, { input })
+    return output
   }
 }
-
-export default new AiService()
- 
