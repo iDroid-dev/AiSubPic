@@ -103,7 +103,7 @@ export default class BotService {
 
       await BotUser.firstOrCreate(
         { botId: ctx.config.id, userId: user.id },
-        { credits: 10 }
+        { credits: 5 }
       )
 
       const welcomeText = ctx.config.config?.welcome_text ||
