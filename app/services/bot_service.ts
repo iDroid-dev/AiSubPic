@@ -10,6 +10,7 @@ import PaymentService from '#services/payment_service'
 
 export interface SessionData {
   isAwaitingPrompt: boolean
+  aspectRatio?: string
 }
 
 export type BotContext = Context & SessionFlavor<SessionData> & {
@@ -168,10 +169,11 @@ export default class BotService {
       }
 
       const modelSlug = currentBot?.aiModel?.slug || 'black-forest-labs/flux-dev'
-      const msg = await ctx.reply(`🎨 <b>Генерирую...</b>\nСпишется кредитов: ${creditsToDeduct}`, { parse_mode: 'HTML' })
+      const userRatio = ctx.session.aspectRatio || "1:1"
+      const msg = await ctx.reply(`🎨 <b>Генерирую...</b>\nФормат: ${userRatio}\nСпишется кредитов: ${creditsToDeduct}`, { parse_mode: 'HTML' })
 
       try {
-        const images = await AiService.generateImage(ctx.message.text, modelSlug)
+        const images = await AiService.generateImage(ctx.message.text, modelSlug, userRatio)
         const resultUrl = Array.isArray(images) ? String(images[0]) : String(images)
 
         // 4. Списание кредитов
@@ -296,9 +298,35 @@ export default class BotService {
         }
     }
 
+// Внутри registerCallbacks
+
+    // 1. При нажатии "Начать рисовать" — спрашиваем формат
     this.bot.callbackQuery('start_gen_hint', async (ctx) => {
-      ctx.session.isAwaitingPrompt = true 
-      await ctx.reply('✍️ <b>Напишите ваш запрос:</b>', { parse_mode: 'HTML' })
+      // Сбрасываем ожидание промпта, пока не выберут формат
+      ctx.session.isAwaitingPrompt = false 
+      
+      await sendOrEdit(ctx, '📐 <b>Выберите формат изображения:</b>', this.getRatioKeyboard())
+      await ctx.answerCallbackQuery()
+    })
+
+    // 2. Обработка выбора формата
+    this.bot.callbackQuery(/^set_ratio:(.+)$/, async (ctx) => {
+      const ratio = ctx.match[1] // Получаем "16:9", "1:1" и т.д.
+      
+      // Сохраняем в сессию
+      ctx.session.aspectRatio = ratio
+      ctx.session.isAwaitingPrompt = true // Теперь ждем текст
+      
+      const ratioNames: Record<string, string> = {
+          '1:1': 'Квадрат',
+          '9:16': 'Сторис',
+          '16:9': 'Альбом',
+          '3:4': 'Портрет',
+          '4:3': 'Фото 4:3'
+      }
+      const name = ratioNames[ratio] || ratio
+
+      await sendOrEdit(ctx, `✅ Формат: <b>${name}</b>\n\n✍️ <b>Теперь напишите ваш запрос:</b>`, new InlineKeyboard().text('🔙 Изменить формат', 'start_gen_hint'))
       await ctx.answerCallbackQuery()
     })
 
@@ -450,5 +478,14 @@ export default class BotService {
     if (config.offerUrl) kb.url('📄 Оферта', config.offerUrl)
 
     return kb
+  }
+  private getRatioKeyboard(): InlineKeyboard {
+    return new InlineKeyboard()
+      .text('⬜️ Квадрат (1:1)', 'set_ratio:1:1').row()
+      .text('📱 Сторис (9:16)', 'set_ratio:9:16')
+      .text('💻 Экран (16:9)', 'set_ratio:16:9').row()
+      .text('🖼 Портрет (3:4)', 'set_ratio:3:4')
+      .text('📷 Фото (4:3)', 'set_ratio:4:3').row()
+      .text('🔙 Назад', 'main_menu')
   }
 }

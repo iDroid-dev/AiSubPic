@@ -1,5 +1,4 @@
-import { translate } from 'bing-translate-api' // 👈 Используем Bing
-// Остальные импорты (Replicate и т.д.) оставь как были
+import { translate } from 'bing-translate-api' 
 import Replicate from 'replicate'
 import env from '#start/env'
 
@@ -8,46 +7,34 @@ export default class AiService {
     auth: env.get('REPLICATE_API_TOKEN'),
   })
 
-  /**
-   * Генерация изображения
-   */
-  public static async generateImage(prompt: string, model: string) {
+  // 👇 1. Добавили аргумент aspectRatio (по умолчанию "1:1")
+  public static async generateImage(prompt: string, model: string, aspectRatio: string = "1:1") {
     let finalPrompt = prompt
 
-    // 1. Пытаемся перевести на английский (Bing)
     try {
-      // Проверяем, есть ли кириллица (русские буквы)
       if (/[а-яА-ЯёЁ]/.test(prompt)) {
-        console.log(`[AI] Translating via Bing: "${prompt}"...`)
-        
-        // null - автоопределение языка, 'en' - куда переводим
         const res = await translate(prompt, null, 'en')
-        
-        if (res && res.translation) {
-          finalPrompt = res.translation
-          console.log(`[AI] Translated: "${finalPrompt}"`)
-        }
+        if (res && res.translation) finalPrompt = res.translation
       }
     } catch (e) {
-      console.error('[Translation Error] Bing failed, using original prompt:', e)
-      // ВАЖНО: Не выбрасываем ошибку, а просто используем оригинальный текст.
-      // Flux/Midjourney иногда понимают русский, это лучше чем краш.
+      console.error('[Translation Error]', e)
       finalPrompt = prompt 
     }
 
-    // 2. Генерируем (Твой старый код Replicate)
-    console.log(`[AI] Generating with model ${model}: "${finalPrompt}"`)
+    console.log(`[AI] Generating ${model} (${aspectRatio}): "${finalPrompt}"`)
 
     const input = {
       prompt: finalPrompt,
       go_fast: true,
       megapixels: "1",
       num_outputs: 1,
-      aspect_ratio: "1:1",
+      aspect_ratio: aspectRatio, // 👇 2. Передаем формат в модель
       output_format: "webp",
       output_quality: 80,
     }
 
+    // Некоторые старые модели могут не поддерживать aspect_ratio текстом,
+    // но Flux, Ideogram и Recraft поддерживают именно такие строки ("16:9", "9:16").
     const output = await this.replicate.run(model as any, { input })
     return output
   }
